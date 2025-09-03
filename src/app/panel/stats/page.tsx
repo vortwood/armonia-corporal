@@ -42,7 +42,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Cargar peluqueros
+        // Cargar Profesionales
         const hairdressersSnapshot = await getDocs(
           collection(db, "hairdressers"),
         );
@@ -98,7 +98,7 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  // Calcular métricas por peluquero
+  // Calcular métricas por profesional
   const calculateMetrics = (
     appointmentsData: AppointmentData[],
     hairdressersData: Hairdresser[],
@@ -109,7 +109,7 @@ export default function DashboardPage() {
 
     const stylistMetrics: Record<string, HairdresserMetrics> = {};
 
-    // Inicializar métricas para peluqueros registrados
+    // Inicializar métricas para Profesionales registrados
     hairdressersData.forEach((h) => {
       stylistMetrics[h.name] = {
         id: h.id,
@@ -181,7 +181,7 @@ export default function DashboardPage() {
       }
     });
 
-    // Calcular servicios populares por peluquero
+    // Calcular servicios populares por profesional
     Object.keys(stylistMetrics).forEach((stylistName) => {
       if (serviceCount[stylistName]) {
         const services = Object.entries(serviceCount[stylistName])
@@ -296,7 +296,7 @@ export default function DashboardPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Peluqueros Activos</p>
+              <p className="text-sm text-gray-600">Profesionales Activos</p>
               <p className="text-3xl font-bold text-purple-600">
                 {activeHairdressers}
               </p>
@@ -348,10 +348,10 @@ export default function DashboardPage() {
 
       <Separator className="my-4 bg-black" />
 
-      {/* Métricas por peluquero */}
+      {/* Métricas por profesional */}
       <div className="space-y-4">
         <h3 className="text-xl font-bold text-neutral-900">
-          Rendimiento por Peluquero
+          Rendimiento por profesional
         </h3>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

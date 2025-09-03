@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import {
-  getHairdresserServices,
+  getProfessionalServices,
   validateAppointment,
 } from "@/util/dynamicScheduling";
-import type { Hairdresser, Service } from "@/util/types";
+import type { Professional, Service } from "@/util/types";
 import { ArrowLeft, Calendar, CheckCircle, Clock, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ import TimeSelect from "./_components/TimeSelect";
 type Step = "professional" | "date" | "time" | "personal" | "confirmation";
 
 interface BookingData {
-  professional: Hairdresser | null;
+  professional: Professional | null;
   date: Date | null;
   time: string;
   personalData: {
@@ -93,7 +93,7 @@ export default function AgendaPage() {
 
       setServicesLoading(true);
       try {
-        const services = await getHairdresserServices(
+        const services = await getProfessionalServices(
           bookingData.professional.id,
         );
         setAvailableServices(services);
@@ -140,7 +140,7 @@ export default function AgendaPage() {
   const getStepTitle = () => {
     switch (currentStep) {
       case "professional":
-        return "Elegí tu Peluquero";
+        return "Elegí tu Terapeuta";
       case "date":
         return "Elegí el Día";
       case "time":
@@ -164,7 +164,7 @@ export default function AgendaPage() {
   };
 
   // Handle professional selection
-  const handleProfessionalSelect = (professional: Hairdresser) => {
+  const handleProfessionalSelect = (professional: Professional) => {
     // Reset subsequent selections when changing professional
     setBookingData((prev) => ({
       ...prev,
@@ -296,7 +296,7 @@ export default function AgendaPage() {
           userFriendlyError.includes("work")
         ) {
           userFriendlyError =
-            "❌ El peluquero no trabaja en este horario. Por favor, selecciona un horario durante el horario de trabajo.";
+            "❌ El profesional no trabaja en este horario. Por favor, selecciona un horario durante el horario de trabajo.";
         } else if (
           userFriendlyError.includes("pasadas") ||
           userFriendlyError.includes("past")
@@ -323,7 +323,7 @@ export default function AgendaPage() {
         email: bookingData.personalData.email.trim().toLowerCase(),
         hora: formattedHora,
         selectedServices: bookingData.selectedServices,
-        hairdresserId: bookingData.professional.id,
+        professionalId: bookingData.professional.id,
         selectedDate: bookingData.date.toISOString(),
         selectedTime: bookingData.time,
         totalPrice: calculateTotalPrice(),
@@ -397,12 +397,20 @@ export default function AgendaPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-black p-4 py-22 text-white">
+      <div
+        className="min-h-screen p-4 py-22"
+        style={{
+          background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+          fontFamily: "Playfair Display, serif",
+        }}
+      >
         <div className="mx-auto max-w-2xl">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold">Reservar Turno</h1>
-            <p className="text-gray-400">
+            <h1 className="mb-2 text-3xl font-light tracking-wide text-gray-800">
+              Reservar Turno
+            </h1>
+            <p className="font-light text-gray-600">
               Paso {getStepNumber()} de 5: {getStepTitle()}
             </p>
           </div>
@@ -415,28 +423,28 @@ export default function AgendaPage() {
                   key={step}
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                     step <= getStepNumber()
-                      ? "bg-white text-black"
-                      : "bg-neutral-500 text-neutral-200"
+                      ? "bg-white text-gray-800 shadow-md"
+                      : "bg-gray-300 text-gray-500"
                   }`}
                 >
                   {step}
                 </div>
               ))}
             </div>
-            <div className="h-2 w-full rounded-full bg-neutral-500">
+            <div className="h-2 w-full rounded-full bg-gray-300">
               <div
-                className="h-2 rounded-full bg-white transition-all duration-300"
+                className="h-2 rounded-full bg-white shadow-sm transition-all duration-300"
                 style={{ width: `${(getStepNumber() / 5) * 100}%` }}
               />
             </div>
           </div>
 
           <Card
-            className="border-neutral-800 bg-neutral-900"
+            className="border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm"
             key={`step-${currentStep}`}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-normal text-white">
+              <CardTitle className="flex items-center gap-2 font-light text-gray-800">
                 {currentStep === "professional" && <User className="h-5 w-5" />}
                 {currentStep === "date" && <Calendar className="h-5 w-5" />}
                 {currentStep === "time" && <Clock className="h-5 w-5" />}
@@ -468,7 +476,7 @@ export default function AgendaPage() {
                       onSelect={handleDateSelect}
                       currentMonth={currentMonth}
                       onMonthChange={setCurrentMonth}
-                      selectedHairdresser={bookingData.professional}
+                      selectedProfessional={bookingData.professional}
                     />
                   </div>
                 )}
@@ -479,7 +487,7 @@ export default function AgendaPage() {
                     <TimeSelect
                       selectedTime={bookingData.time}
                       onSelect={handleTimeSelect}
-                      selectedHairdresser={bookingData.professional}
+                      selectedProfessional={bookingData.professional}
                       selectedDate={bookingData.date}
                     />
                   </div>
@@ -497,18 +505,41 @@ export default function AgendaPage() {
 
                       {/* Services Selection */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-white">
+                        <h3 className="text-lg font-light text-gray-800">
                           Servicios disponibles *
                         </h3>
 
                         {servicesLoading ? (
                           <div className="flex justify-center py-4">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600"></div>
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
                           </div>
                         ) : availableServices.length === 0 ? (
-                          <p className="text-gray-400">
-                            No hay servicios disponibles
-                          </p>
+                          <div className="py-8 text-center">
+                            <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
+                              <div className="mb-2 text-blue-600">
+                                <svg
+                                  className="mx-auto h-10 w-10"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                  />
+                                </svg>
+                              </div>
+                              <h4 className="mb-2 font-medium text-blue-800">
+                                No hay servicios disponibles
+                              </h4>
+                              <p className="text-sm text-blue-700">
+                                Este profesional aún no tiene servicios
+                                configurados.
+                              </p>
+                            </div>
+                          </div>
                         ) : (
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {availableServices.map((service) => (
@@ -518,18 +549,18 @@ export default function AgendaPage() {
                                   bookingData.selectedServices.includes(
                                     service.id,
                                   )
-                                    ? "border-white bg-neutral-100/20"
-                                    : "border-neutral-700 bg-neutral-800 hover:border-neutral-600"
+                                    ? "border-gray-400 bg-white shadow-md"
+                                    : "border-gray-300 bg-white/50 hover:border-gray-400 hover:shadow-sm"
                                 }`}
                                 onClick={() => handleServiceToggle(service.id)}
                               >
                                 <div className="flex items-center justify-between">
                                   <div className="flex-1">
-                                    <h4 className="font-semibold text-white">
+                                    <h4 className="font-medium text-gray-800">
                                       {service.name}
                                     </h4>
                                     {service.description && (
-                                      <p className="mt-1 text-sm text-neutral-400">
+                                      <p className="mt-1 text-sm text-gray-600">
                                         {service.description}
                                       </p>
                                     )}
@@ -539,18 +570,18 @@ export default function AgendaPage() {
                                     service.price &&
                                     service.promoPrice < service.price ? (
                                       <div>
-                                        <span className="text-lg font-bold text-green-400">
+                                        <span className="text-lg font-bold text-green-600">
                                           ${service.promoPrice}
                                         </span>
-                                        <span className="ml-1 text-sm text-neutral-500 line-through">
+                                        <span className="ml-1 text-sm text-gray-500 line-through">
                                           ${service.price}
                                         </span>
-                                        <div className="text-xs text-green-400">
+                                        <div className="text-xs text-green-600">
                                           ¡Promo!
                                         </div>
                                       </div>
                                     ) : service.price ? (
-                                      <span className="text-lg font-bold text-white">
+                                      <span className="text-lg font-bold text-gray-800">
                                         ${service.price}
                                       </span>
                                     ) : (
@@ -567,7 +598,7 @@ export default function AgendaPage() {
 
                         {bookingData.selectedServices.length === 0 &&
                           availableServices.length > 0 && (
-                            <p className="text-sm text-red-400">
+                            <p className="text-sm text-red-500">
                               Selecciona al menos un servicio
                             </p>
                           )}
@@ -575,12 +606,12 @@ export default function AgendaPage() {
 
                       {/* Total Price */}
                       {bookingData.selectedServices.length > 0 && (
-                        <div className="rounded-xl bg-neutral-800 p-4">
+                        <div className="rounded-xl border border-gray-200 bg-white/80 p-4">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-white">
+                            <span className="font-medium text-gray-800">
                               Total:
                             </span>
-                            <span className="text-xl font-bold text-green-400">
+                            <span className="text-xl font-bold text-green-600">
                               ${calculateTotalPrice()}
                             </span>
                           </div>
@@ -602,7 +633,7 @@ export default function AgendaPage() {
                               specialty:
                                 bookingData.professional.services?.length > 0
                                   ? `${bookingData.professional.services.length} servicios disponibles`
-                                  : "Peluquero profesional",
+                                  : "Terapeuta profesional",
                             }
                           : null,
                         date: bookingData.date,
@@ -625,7 +656,7 @@ export default function AgendaPage() {
                     <Button
                       variant="outline"
                       onClick={prevStep}
-                      className="border-gray-600 bg-transparent text-gray-300 hover:bg-gray-800"
+                      className="border-gray-300 bg-white/50 text-gray-700 hover:bg-white/80 hover:shadow-sm"
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" />
                       Anterior
@@ -638,11 +669,11 @@ export default function AgendaPage() {
                       currentStep === "personal" ? handleSubmit : nextStep
                     }
                     disabled={!canProceedToNextStep() || isSubmitting}
-                    className="ml-auto bg-white text-black hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="ml-auto bg-white text-gray-800 shadow-md hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">
-                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-800 border-t-transparent"></div>
                         Enviando...
                       </div>
                     ) : currentStep === "personal" ? (
@@ -667,7 +698,7 @@ export default function AgendaPage() {
                         });
                         setCurrentMonth(new Date());
                       }}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-green-600 shadow-md hover:bg-green-700"
                     >
                       Volver
                     </Button>
@@ -681,12 +712,12 @@ export default function AgendaPage() {
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="border-neutral-700 bg-neutral-900 text-white">
+        <DialogContent className="border-gray-200 bg-white text-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-green-400">
+            <DialogTitle className="text-green-600">
               ¡Reserva Confirmada!
             </DialogTitle>
-            <DialogDescription className="text-neutral-300">
+            <DialogDescription className="text-gray-600">
               Tu reserva ha sido registrada exitosamente. Recibirás un email de
               confirmación.
             </DialogDescription>
@@ -704,12 +735,12 @@ export default function AgendaPage() {
 
       {/* Error Modal */}
       <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
-        <DialogContent className="border-red-700 bg-neutral-500 text-white">
+        <DialogContent className="border-red-200 bg-white text-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-red-400">
+            <DialogTitle className="text-red-600">
               Error en la Reserva
             </DialogTitle>
-            <DialogDescription className="text-gray-300">
+            <DialogDescription className="text-gray-600">
               {errorMessage}
             </DialogDescription>
           </DialogHeader>

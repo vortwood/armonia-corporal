@@ -1,16 +1,20 @@
+"use client";
+
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { useBusinessConfig } from "@/hooks/useBusinessConfig";
+import { Button } from "@/components/ui/button";
 
-import PeluqueriaFooter from "./PeluqueriaFooter";
+import Footer from "./Footer";
 
-interface ElegantHomeProps {
-  setCurrentStyle: (style: string) => void;
-}
-
-export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
+export default function ElegantHome() {
   const { config, formatPrice } = useBusinessConfig();
+  const router = useRouter();
+
+  const handleBookingClick = () => {
+    router.push("/agenda");
+  };
 
   return (
     <div
@@ -28,7 +32,9 @@ export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
           <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
-            <span className="text-4xl font-bold text-white">{config.shortName}</span>
+            <span className="text-4xl font-bold text-white">
+              {config.shortName}
+            </span>
           </div>
           <h1 className="mb-4 text-5xl font-light tracking-wide text-white md:text-7xl lg:text-8xl">
             {config.name}
@@ -37,7 +43,7 @@ export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
             {config.tagline}
           </p>
           <Button
-            onClick={() => console.log("nada")}
+            onClick={handleBookingClick}
             className="text-foreground rounded-none bg-white px-12 py-6 text-lg font-light tracking-wider hover:bg-white/90"
           >
             RESERVAR CITA
@@ -87,18 +93,19 @@ export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div>
               <h3 className="text-foreground mb-6 text-3xl font-light">
-                Maestría en cada detalle
+                Experiencia y dedicación profesional
               </h3>
               <p className="text-muted-foreground leading-relaxed font-light">
-                Con más de 10 años de experiencia, nuestro equipo domina las
-                últimas técnicas y tendencias internacionales. Utilizamos
-                productos premium que cuidan y realzan la salud de tu cabello.
+                Con más de 5 años de experiencia como esteticista y cosmiátra, 
+                me especializo en tratamientos personalizados que realzan tu belleza natural. 
+                Utilizo productos de primera calidad y las técnicas más avanzadas en 
+                aparatología estética para cuidar tu piel y bienestar.
               </p>
               <Button
-                onClick={() => console.log("nada")}
+                onClick={handleBookingClick}
                 className="bg-primary text-primary-foreground mt-8 rounded-none px-8 py-4"
               >
-                Descubre más
+                Reservar cita
               </Button>
             </div>
             <div>
@@ -139,13 +146,14 @@ export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
             Visítanos
           </h2>
           <div className="text-muted-foreground space-y-4">
-            <p>Calle Serrano 123, Madrid</p>
-            <p>Lun - Vie: 10:00 - 20:00</p>
-            <p>Sábado: 10:00 - 15:00</p>
-            <p className="text-lg">+34 911 234 567</p>
+            <p>Mario E. de Cola s/n, Maldonado</p>
+            <p>Lun - Vie: 9:00 - 18:00</p>
+            <p>Sábado: 9:00 - 15:00</p>
+            <p>Domingo: Cerrado</p>
+            <p className="text-lg">+598 99 425 621</p>
           </div>
           <Button
-            onClick={() => console.log("nada")}
+            onClick={handleBookingClick}
             className="bg-primary text-primary-foreground mt-12 rounded-none px-12 py-6"
           >
             RESERVAR AHORA
@@ -153,10 +161,7 @@ export default function ElegantHome({ setCurrentStyle }: ElegantHomeProps) {
         </div>
       </section>
 
-      <PeluqueriaFooter
-        currentStyle="elegant"
-        setCurrentStyle={setCurrentStyle}
-      />
+      <Footer />
     </div>
   );
 }

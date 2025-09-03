@@ -1,6 +1,6 @@
 "use client";
 
-import type { Hairdresser } from "@/util/types";
+import type { Professional } from "@/util/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,15 +14,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface HairdressersCardProps {
-  hairdressers: Hairdresser[];
+  professionals: Professional[];
   onToggleActive: (id: string, currentStatus: boolean) => Promise<void>;
-  onEditHairdresser: (hairdresser: Hairdresser) => void;
+  onEditHairdresser: (hairdresser: Professional) => void;
+  onDeleteHairdresser: (hairdresser: Professional) => void;
 }
 
 export default function HairdressersCard({
-  hairdressers,
+  professionals,
   onToggleActive,
   onEditHairdresser,
+  onDeleteHairdresser,
 }: HairdressersCardProps) {
   const getInitials = (name: string) => {
     return name
@@ -32,42 +34,41 @@ export default function HairdressersCard({
       .toUpperCase();
   };
 
-
   return (
     <div className="space-y-4">
-      {hairdressers.map((hairdresser) => (
-        <Card key={hairdresser.id} className="w-full py-0">
+      {professionals && professionals.length > 0 ? professionals.map((professional) => (
+        <Card key={professional.id} className="w-full py-0">
           <CardContent className="p-4">
             <div className="space-y-4">
               {/* Header con nombre y foto */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="relative h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                    {hairdresser.photo ? (
+                    {professional.photo ? (
                       <img
-                        src={hairdresser.photo}
-                        alt={hairdresser.name}
+                        src={professional.photo}
+                        alt={professional.name}
                         className="h-full w-full object-cover"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gray-200 text-sm font-medium text-gray-600">
-                        {getInitials(hairdresser.name)}
+                        {getInitials(professional.name)}
                       </div>
                     )}
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
-                      {hairdresser.name}
+                      {professional.name}
                     </p>
                     <div className="mt-1 flex items-center space-x-2">
                       <Checkbox
-                        checked={hairdresser.isActive}
+                        checked={professional.isActive}
                         onCheckedChange={() =>
-                          onToggleActive(hairdresser.id, hairdresser.isActive)
+                          onToggleActive(professional.id, professional.isActive)
                         }
                       />
                       <span className="text-sm text-gray-500">
-                        {hairdresser.isActive ? "Activo" : "Inactivo"}
+                        {professional.isActive ? "Activo" : "Inactivo"}
                       </span>
                     </div>
                   </div>
@@ -92,13 +93,13 @@ export default function HairdressersCard({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white" align="end">
                     <DropdownMenuItem
-                      onClick={() => onEditHairdresser(hairdresser)}
+                      onClick={() => onEditHairdresser(professional)}
                     >
                       Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => onEditHairdresser(hairdresser)}
+                      onClick={() => onDeleteHairdresser(professional)}
                     >
                       Eliminar
                     </DropdownMenuItem>
@@ -110,8 +111,8 @@ export default function HairdressersCard({
               <div className="space-y-2">
                 <div>
                   <p className="text-sm font-medium text-gray-700">Contacto</p>
-                  <p className="text-sm text-gray-900">{hairdresser.email}</p>
-                  <p className="text-sm text-gray-500">{hairdresser.phone}</p>
+                  <p className="text-sm text-gray-900">{professional.email}</p>
+                  <p className="text-sm text-gray-500">{professional.phone}</p>
                 </div>
               </div>
 
@@ -119,21 +120,34 @@ export default function HairdressersCard({
               <div className="space-y-2">
                 <div>
                   <p className="text-sm font-medium text-gray-700">Horario</p>
-                  {hairdresser.schedule.weeklySchedule ? (
+                  {professional.schedule.weeklySchedule ? (
                     <div className="space-y-1">
-                      {hairdresser.schedule.weeklySchedule
-                        .filter(day => day.isWorkingDay)
-                        .map(day => (
-                          <div key={day.dayOfWeek} className="text-xs text-gray-600">
-                            <span className="capitalize">{day.dayOfWeek.slice(0,3)}</span>: 
-                            {day.workingPeriods.map(period => 
-                              ` ${period.startTime}-${period.endTime}`
-                            ).join(', ')}
+                      {professional.schedule.weeklySchedule
+                        .filter((day) => day.isWorkingDay)
+                        .map((day) => (
+                          <div
+                            key={day.dayOfWeek}
+                            className="text-xs text-gray-600"
+                          >
+                            <span className="capitalize">
+                              {day.dayOfWeek.slice(0, 3)}
+                            </span>
+                            :
+                            {day.workingPeriods && day.workingPeriods.length > 0
+                              ? day.workingPeriods
+                                  .map(
+                                    (period) =>
+                                      ` ${period.startTime}-${period.endTime}`,
+                                  )
+                                  .join(", ")
+                              : " Sin horario"}
                           </div>
                         ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500">Sin horario configurado</p>
+                    <p className="text-sm text-gray-500">
+                      Sin horario configurado
+                    </p>
                   )}
                 </div>
               </div>
@@ -143,14 +157,18 @@ export default function HairdressersCard({
                 <p className="text-sm font-medium text-gray-700">Servicios</p>
                 <div className="flex flex-wrap gap-1">
                   <Badge variant="outline" className="text-sm">
-                    {hairdresser.services.length}
+                    {professional.services?.length || 0}
                   </Badge>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-      ))}
+      )) : (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No hay profesionales disponibles</p>
+        </div>
+      )}
     </div>
   );
 }

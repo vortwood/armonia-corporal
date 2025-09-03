@@ -21,7 +21,7 @@ const data = {
       isActive: true,
     },
     {
-      title: "Peluqueros",
+      title: "Profesionales",
       url: "/panel/hairdressers",
       icon: Users,
       isActive: true,

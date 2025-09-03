@@ -8,45 +8,48 @@ import {
 } from "firebase/firestore";
 
 import db from "./firestore";
-import type { DaySchedule, Hairdresser, Service, TimeSlot } from "./types";
+import type { DaySchedule, Professional, Service, TimeSlot } from "./types";
 
 // Cache to avoid repeated database calls
-let hairdressersCache: Hairdresser[] | null = null;
+let professionalsCache: Professional[] | null = null;
 let servicesCache: Service[] | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Gets all active hairdressers from database with caching
+ * Gets all active professionals from database with caching
  */
-export const getActiveHairdressers = async (): Promise<Hairdresser[]> => {
+export const getActiveProfessionals = async (): Promise<Professional[]> => {
   const now = Date.now();
 
   // Return cached data if still valid
-  if (hairdressersCache && now - cacheTimestamp < CACHE_DURATION) {
-    return hairdressersCache.filter((h) => h.isActive);
+  if (professionalsCache && now - cacheTimestamp < CACHE_DURATION) {
+    return professionalsCache.filter((h) => h.isActive);
   }
 
   try {
-    const hairdressersQuery = query(
-      collection(db, "hairdressers"),
+    const professionalsQuery = query(
+      collection(db, "professionals"),
       where("isActive", "==", true),
     );
 
-    const querySnapshot = await getDocs(hairdressersQuery);
-    const hairdressers = querySnapshot.docs.map((doc) => ({
+    const querySnapshot = await getDocs(professionalsQuery);
+    const professionals = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as Hairdresser[];
+    })) as Professional[];
 
     // Update cache
-    hairdressersCache = hairdressers;
+    professionalsCache = professionals;
     cacheTimestamp = now;
 
-    return hairdressers;
+    return professionals;
   } catch (error) {
-    console.error("Error fetching hairdressers:", error);
-    return [];
+    console.error("Error fetching professionals:", error);
+    // Throw error for UI handling instead of returning empty array
+    throw new Error(
+      "No se pudieron cargar los profesionales. Verifica tu conexión e inténtalo nuevamente.",
+    );
   }
 };
 
@@ -75,7 +78,7 @@ export const getActiveServices = async (): Promise<Service[]> => {
 
     // Update cache
     servicesCache = services;
-    if (!hairdressersCache) cacheTimestamp = now; // Only update if not already set
+    if (!professionalsCache) cacheTimestamp = now; // Only update if not already set
 
     return services;
   } catch (error) {
@@ -85,67 +88,67 @@ export const getActiveServices = async (): Promise<Service[]> => {
 };
 
 /**
- * Gets a specific hairdresser by ID
+ * Gets a specific professional by ID
  */
-export const getHairdresserById = async (
+export const getProfessionalById = async (
   id: string,
-): Promise<Hairdresser | null> => {
+): Promise<Professional | null> => {
   try {
-    const docRef = doc(db, "hairdressers", id);
+    const docRef = doc(db, "professionals", id);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() } as Hairdresser;
+      return { id: docSnap.id, ...docSnap.data() } as Professional;
     }
 
     return null;
   } catch (error) {
-    console.error("Error fetching hairdresser:", error);
+    console.error("Error fetching professional:", error);
     return null;
   }
 };
 
 /**
- * Gets services offered by a specific hairdresser
+ * Gets services offered by a specific professional
  */
-export const getHairdresserServices = async (
-  hairdresserId: string,
+export const getProfessionalServices = async (
+  professionalId: string,
 ): Promise<Service[]> => {
   try {
-    const hairdresser = await getHairdresserById(hairdresserId);
+    const professional = await getProfessionalById(professionalId);
 
-    if (!hairdresser) {
+    if (!professional) {
       return [];
     }
 
     const allServices = await getActiveServices();
 
-    // Filter services that this hairdresser offers
+    // Filter services that this professional offers
     const filteredServices = allServices.filter(
       (service) =>
-        hairdresser.services.includes(service.id) ||
-        hairdresser.services.includes(service.name), // Backward compatibility
+        professional.services.includes(service.id) ||
+        professional.services.includes(service.name), // Backward compatibility
     );
 
     return filteredServices;
   } catch (error) {
-    console.error("Error fetching hairdresser services:", error);
+    console.error("Error fetching professional services:", error);
     return [];
   }
 };
 
 /**
- * Generates time slots for a hairdresser based on their day-specific schedule
+ * Generates time slots for a professional based on their day-specific schedule
  */
-export const generateHairdresserTimeSlots = (
-  hairdresser: Hairdresser,
+export const generateProfessionalTimeSlots = (
+  professional: Professional,
   selectedDate: Date,
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   const dayOfWeek = getDayOfWeek(selectedDate);
 
   // Find the specific day's schedule
-  const daySchedule = hairdresser.schedule.weeklySchedule?.find(
+  const daySchedule = professional.schedule.weeklySchedule?.find(
     (day) => day.dayOfWeek === dayOfWeek,
   );
 
@@ -155,7 +158,7 @@ export const generateHairdresserTimeSlots = (
 
   // Use day-specific slot interval or default
   const interval =
-    daySchedule.slotInterval || hairdresser.schedule.defaultSlotInterval || 30;
+    daySchedule.slotInterval || professional.schedule.defaultSlotInterval || 30;
 
   // Generate slots for each working period of this specific day
   const sortedPeriods = [...daySchedule.workingPeriods].sort(
@@ -180,21 +183,21 @@ export const generateHairdresserTimeSlots = (
 };
 
 /**
- * Gets available time slots for a hairdresser on a specific date
+ * Gets available time slots for a professional on a specific date
  */
 export const getAvailableTimeSlots = async (
-  hairdresserId: string,
+  professionalId: string,
   selectedDate: Date,
 ): Promise<TimeSlot[]> => {
   try {
-    const hairdresser = await getHairdresserById(hairdresserId);
-    if (!hairdresser) return [];
+    const professional = await getProfessionalById(professionalId);
+    if (!professional) return [];
 
-    // Generate all possible time slots for this hairdresser
-    const allSlots = generateHairdresserTimeSlots(hairdresser, selectedDate);
+    // Generate all possible time slots for this professional
+    const allSlots = generateProfessionalTimeSlots(professional, selectedDate);
 
-    // Get existing appointments for this hairdresser on this date
-    const bookedTimes = await getBookedTimes(hairdresserId, selectedDate);
+    // Get existing appointments for this professional on this date
+    const bookedTimes = await getBookedTimes(professionalId, selectedDate);
 
     // Mark slots as unavailable if they're booked
     const result = allSlots.map((slot) => ({
@@ -210,15 +213,15 @@ export const getAvailableTimeSlots = async (
 };
 
 /**
- * Gets booked times for a hairdresser on a specific date
+ * Gets booked times for a professional on a specific date
  */
 export const getBookedTimes = async (
-  hairdresserId: string,
+  professionalId: string,
   selectedDate: Date,
 ): Promise<string[]> => {
   try {
-    const hairdresser = await getHairdresserById(hairdresserId);
-    if (!hairdresser) return [];
+    const professional = await getProfessionalById(professionalId);
+    if (!professional) return [];
 
     // Format date for comparison (DD/MM/YYYY format used in existing system)
     const dateString = formatDateForFirebase(selectedDate);
@@ -229,7 +232,7 @@ export const getBookedTimes = async (
     try {
       const appointmentsQuery = query(
         collection(db, "appointments"),
-        where("hairdresserId", "==", hairdresserId),
+        where("professionalId", "==", professionalId),
       );
       const appointmentsSnapshot = await getDocs(appointmentsQuery);
       appointmentsSnapshot.docs.forEach((doc) => {
@@ -259,20 +262,20 @@ export const getBookedTimes = async (
  * Validates if an appointment can be booked
  */
 export const validateAppointment = async (
-  hairdresserId: string,
+  professionalId: string,
   selectedDate: Date,
   selectedTime: string,
   selectedServices: string[],
 ): Promise<{ valid: boolean; error?: string }> => {
   try {
-    // Check if hairdresser exists and is active
-    const hairdresser = await getHairdresserById(hairdresserId);
-    if (!hairdresser) {
-      return { valid: false, error: "Peluquero no encontrado" };
+    // Check if professional exists and is active
+    const professional = await getProfessionalById(professionalId);
+    if (!professional) {
+      return { valid: false, error: "profesional no encontrado" };
     }
 
-    if (!hairdresser.isActive) {
-      return { valid: false, error: "Peluquero no disponible" };
+    if (!professional.isActive) {
+      return { valid: false, error: "profesional no disponible" };
     }
 
     // Check if date is in the future
@@ -287,14 +290,14 @@ export const validateAppointment = async (
       };
     }
 
-    // Check if hairdresser works on this day using new schedule format
+    // Check if professional works on this day using new schedule format
     const dayOfWeek = getDayOfWeek(selectedDate);
-    const daySchedule = hairdresser.schedule.weeklySchedule?.find(
+    const daySchedule = professional.schedule.weeklySchedule?.find(
       (day) => day.dayOfWeek === dayOfWeek,
     );
 
     if (!daySchedule?.isWorkingDay) {
-      return { valid: false, error: "Peluquero no trabaja este día" };
+      return { valid: false, error: "profesional no trabaja este día" };
     }
 
     // Check if time is within working hours for this specific day
@@ -316,21 +319,21 @@ export const validateAppointment = async (
     }
 
     // Check if time slot is available
-    const bookedTimes = await getBookedTimes(hairdresserId, selectedDate);
+    const bookedTimes = await getBookedTimes(professionalId, selectedDate);
     if (bookedTimes.includes(selectedTime)) {
       return { valid: false, error: "Horario ya ocupado" };
     }
 
-    // Check if hairdresser offers the selected services
-    const hairdresserServices = await getHairdresserServices(hairdresserId);
-    const serviceIds = hairdresserServices.map((s) => s.id);
-    const serviceNames = hairdresserServices.map((s) => s.name);
+    // Check if professional offers the selected services
+    const professionalServices = await getProfessionalServices(professionalId);
+    const serviceIds = professionalServices.map((s) => s.id);
+    const serviceNames = professionalServices.map((s) => s.name);
 
     for (const service of selectedServices) {
       if (!serviceIds.includes(service) && !serviceNames.includes(service)) {
         return {
           valid: false,
-          error: `Servicio "${service}" no disponible con este peluquero`,
+          error: `Servicio "${service}" no disponible con este profesional`,
         };
       }
     }
@@ -390,7 +393,7 @@ const formatDateForFirebase = (date: Date): string => {
 };
 
 /**
- * Creates a default weekly schedule for a new hairdresser
+ * Creates a default weekly schedule for a new professional
  */
 export const createDefaultWeeklySchedule = (): DaySchedule[] => {
   const days: DaySchedule["dayOfWeek"][] = [
@@ -416,7 +419,7 @@ export const createDefaultWeeklySchedule = (): DaySchedule[] => {
  * Clears the cache (useful for admin operations)
  */
 export const clearSchedulingCache = () => {
-  hairdressersCache = null;
+  professionalsCache = null;
   servicesCache = null;
   cacheTimestamp = 0;
 };

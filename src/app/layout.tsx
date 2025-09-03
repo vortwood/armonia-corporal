@@ -30,7 +30,7 @@ function generateMetadata(): Metadata {
     },
     openGraph: {
       type: "website",
-      locale: "es_ES",
+      locale: "es_UY",
       siteName: config.name,
       title: config.seo.title,
       description: config.seo.description,
@@ -67,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const config = getBusinessConfig();
-  const businessTypeLabel = config.businessType === 'barberia' ? 'HairSalon' : 'BeautySalon';
+  const businessTypeLabel = config.businessType === 'clinica_estetica' ? 'BeautySalon' : 'HealthAndBeautyBusiness';
   
   return (
     <html lang="es" translate="no">
@@ -109,7 +109,7 @@ export default function RootLayout({
               ].filter(Boolean),
               hasOfferCatalog: {
                 "@type": "OfferCatalog",
-                name: `Servicios de ${config.businessType === 'barberia' ? 'Barbería' : 'Peluquería'}`,
+                name: `Servicios de ${config.businessType === 'clinica_estetica' ? 'Estética' : 'Bienestar'}`,
                 itemListElement: config.services.map(service => ({
                   "@type": "Offer",
                   itemOffered: {

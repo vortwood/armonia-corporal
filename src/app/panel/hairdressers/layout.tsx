@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Gestión de Peluqueros - Panel Administrativo",
-  description: "Panel administrativo para gestión de peluqueros. Acceso restringido.",
+  title: "Gestión de Profesionales - Panel Administrativo",
+  description:
+    "Panel administrativo para gestión de Profesionales. Acceso restringido.",
   robots: {
     index: false,
     follow: false,

@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Professionals collection - Allow read for booking interface and admin
+    match /professionals/{professionalId} {
+      allow read, write: if true; // Allow admin full access
+    }
+    
+    // Services configuration - Allow read for booking interface and admin
+    match /services/{serviceId} {
+      allow read, write: if true; // Allow admin full access
+    }
+    
+    // Appointments - Allow full access for admin panel
+    match /appointments/{appointmentId} {
+      allow read, write: if true; // Allow admin full access
+    }
+    
+    // Legacy collections - Allow admin access
+    match /clientes/{clientId} {
+      allow read, write: if true; // Allow admin access for migration
+    }
+    
+    // Default: allow all for now (can restrict later with auth)
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

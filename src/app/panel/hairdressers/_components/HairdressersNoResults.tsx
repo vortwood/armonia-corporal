@@ -21,16 +21,16 @@ export function HairdressersNoResults({
         />
       </svg>
       <h3 className="mt-4 text-lg font-medium text-gray-900">
-        No hay peluqueros registrados
+        No hay Profesionales registrados
       </h3>
       <p className="mt-2 text-gray-500">
-        Comienza agregando tu primer peluquero al equipo.
+        Comienza agregando tu primer profesional al equipo.
       </p>
       <Button
         onClick={() => setShowCreateDialog(true)}
         className="mt-4 rounded-xl"
       >
-        Agregar Primer Peluquero
+        Agregar Primer Profesional
       </Button>
     </div>
   );

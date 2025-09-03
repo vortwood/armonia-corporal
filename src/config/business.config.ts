@@ -1,3 +1,6 @@
+// Import client configuration
+import { CLIENT_CONFIG } from "./client-config";
+
 // Business Configuration Template System
 // This file contains all customizable business information
 
@@ -8,10 +11,10 @@ export interface BusinessConfig {
   tagline: string;
   description: string;
   established?: string;
-  
+
   // Business Type
-  businessType: 'peluqueria' | 'barberia' | 'clinica_estetica';
-  
+  businessType: "clinica_estetica" | "spa" | "centro_bienestar";
+
   // Contact Information
   contact: {
     phone: string;
@@ -20,7 +23,7 @@ export interface BusinessConfig {
     instagram?: string;
     facebook?: string;
   };
-  
+
   // Location Information
   location: {
     address: string;
@@ -31,7 +34,7 @@ export interface BusinessConfig {
       lng: number;
     };
   };
-  
+
   // Business Hours
   hours: {
     monday?: string;
@@ -42,7 +45,7 @@ export interface BusinessConfig {
     saturday?: string;
     sunday?: string;
   };
-  
+
   // Services Configuration
   services: {
     name: string;
@@ -51,14 +54,14 @@ export interface BusinessConfig {
     description: string;
     category?: string;
   }[];
-  
+
   // Pricing Configuration
   currency: {
     symbol: string;
     code: string;
-    position: 'before' | 'after'; // €25 vs 25€
+    position: "before" | "after"; // €25 vs 25€
   };
-  
+
   // Brand Colors (will override CSS variables)
   colors?: {
     primary?: string;
@@ -66,7 +69,7 @@ export interface BusinessConfig {
     accent?: string;
     background?: string;
   };
-  
+
   // SEO Configuration
   seo: {
     title: string;
@@ -74,7 +77,7 @@ export interface BusinessConfig {
     keywords: string[];
     ogImage?: string;
   };
-  
+
   // Team/Staff Information (optional)
   team?: {
     name: string;
@@ -82,7 +85,7 @@ export interface BusinessConfig {
     experience?: string;
     photo?: string;
   }[];
-  
+
   // Statistics/Achievements (optional)
   stats?: {
     yearsExperience?: number;
@@ -90,7 +93,7 @@ export interface BusinessConfig {
     rating?: number;
     specialties?: string[];
   };
-  
+
   // Testimonials
   testimonials?: {
     name: string;
@@ -103,98 +106,148 @@ export interface BusinessConfig {
 
 // Default template - serves as example and fallback
 export const DEFAULT_BUSINESS_CONFIG: BusinessConfig = {
-  name: "Tu Negocio",
-  shortName: "TN",
-  tagline: "Tu eslogan aquí",
-  description: "Descripción de tu negocio de belleza profesional",
-  established: "2024",
-  businessType: "peluqueria",
-  
+  name: "Armonía Corporal by Alejandra Duarte",
+  shortName: "AC",
+  tagline: "Estética para tu bienestar",
+  description:
+    "Mi estilo de trabajo se caracteriza por la atención meticulosa a los detalles y un ambiente relajante que permite a mis clientes desconectar del estrés diario. Ya sea que busques un tratamiento facial rejuvenecedor o un masaje terapéutico, mi objetivo es que te sientas renovado y en equilibrio después de cada sesión.",
+  established: "2023",
+  businessType: "clinica_estetica",
+
   contact: {
-    phone: "+1 234 567 8900",
-    email: "info@tunegocio.com",
-    whatsapp: "+1 234 567 8900",
+    phone: "+59899425621",
+    email: "contacto@alejandraduarte.uy",
+    whatsapp: "+59899425621",
     instagram: "@tunegocio",
   },
-  
+
   location: {
-    address: "Dirección de tu negocio 123",
-    city: "Tu Ciudad",
-    country: "Tu País",
+    address: "Mario E. de Cola s/n, Maldonado.",
+    city: "Maldonado",
+    country: "Uruguay",
   },
-  
+
   hours: {
     monday: "9:00 - 18:00",
-    tuesday: "9:00 - 18:00", 
+    tuesday: "9:00 - 18:00",
     wednesday: "9:00 - 18:00",
     thursday: "9:00 - 18:00",
     friday: "9:00 - 18:00",
     saturday: "9:00 - 15:00",
     sunday: "Cerrado",
   },
-  
+
   services: [
     {
-      name: "Corte de Pelo",
-      price: "25",
-      duration: "45 min",
-      description: "Corte personalizado según tu estilo",
-      category: "corte"
+      name: "Limpieza Facial Profunda",
+      price: "1800",
+      duration: "75 min",
+      description: "Limpieza facial completa con extracción y mascarilla hidratante",
+      category: "Tratamientos faciales",
     },
     {
-      name: "Coloración",
-      price: "45", 
-      duration: "120 min",
-      description: "Coloración profesional completa",
-      category: "color"
-    },
-    {
-      name: "Mechas",
-      price: "60",
-      duration: "150 min", 
-      description: "Mechas y highlights profesionales",
-      category: "color"
-    },
-    {
-      name: "Tratamiento",
-      price: "35",
+      name: "Peeling Químico",
+      price: "2200",
       duration: "60 min",
-      description: "Tratamiento capilar nutritivo",
-      category: "tratamiento"
+      description: "Renovación celular profunda con ácidos para rejuvenecer la piel",
+      category: "Tratamientos faciales",
+    },
+    {
+      name: "Hydrafacial",
+      price: "2800",
+      duration: "90 min",
+      description: "Tratamiento de hidratación y nutrición facial con aparatología de última generación",
+      category: "Aparatología",
+    },
+    {
+      name: "Masaje Relajante",
+      price: "1600",
+      duration: "60 min",
+      description: "Masaje corporal relajante con aceites esenciales y técnicas de relajación",
+      category: "Tratamientos corporales",
+    },
+    {
+      name: "Masaje Descontracturante",
+      price: "1800",
+      duration: "60 min",
+      description: "Masaje terapéutico para aliviar tensiones y contracturas musculares",
+      category: "Tratamientos corporales",
+    },
+    {
+      name: "Radiofrecuencia Facial",
+      price: "2500",
+      duration: "50 min",
+      description: "Tratamiento antiedad con radiofrecuencia para tensar y rejuvenecer",
+      category: "Aparatología",
+    },
+    {
+      name: "Drenaje Linfático",
+      price: "1900",
+      duration: "75 min",
+      description: "Masaje especializado para reducir retención de líquidos y mejorar circulación",
+      category: "Tratamientos corporales",
+    },
+    {
+      name: "Tratamiento Anticelulítico",
+      price: "2300",
+      duration: "90 min",
+      description: "Combinación de aparatología y masaje para reducir celulitis y modelar figura",
+      category: "Aparatología",
     }
   ],
-  
+
   currency: {
     symbol: "$",
-    code: "USD",
-    position: "before"
+    code: "UYU",
+    position: "before",
   },
-  
+
   seo: {
-    title: "Tu Negocio | Servicios de Belleza Profesional",
-    description: "Los mejores servicios de belleza en tu ciudad. Profesionales expertos y productos de calidad.",
-    keywords: ["peluqueria", "belleza", "corte", "color", "tratamiento"]
+    title: "Armonía Corporal by Alejandra Duarte | Clínica Estética Maldonado",
+    description:
+      "Clínica estética especializada en tratamientos faciales, corporales y aparatología en Maldonado, Uruguay. Alejandra Duarte, esteticista y cosmiátra profesional con más de 5 años de experiencia.",
+    keywords: [
+      "clínica estética maldonado",
+      "esteticista maldonado",
+      "cosmiátra maldonado", 
+      "tratamientos faciales maldonado",
+      "masajes maldonado",
+      "aparatología estética",
+      "peeling químico",
+      "hydrafacial",
+      "radiofrecuencia facial",
+      "drenaje linfático",
+      "tratamientos anticelulíticos",
+      "masaje descontracturante",
+      "alejandra duarte esteticista",
+      "belleza y bienestar maldonado",
+      "cuidado de la piel uruguay",
+      "estética profesional"
+    ],
   },
-  
+
   stats: {
     yearsExperience: 5,
-    clientsServed: 1000,
+    clientsServed: 800,
     rating: 4.9,
-    specialties: ["Cortes modernos", "Coloración", "Tratamientos"]
+    specialties: [
+      "Tratamientos faciales",
+      "Aparatología estética", 
+      "Masajes terapéuticos",
+      "Cuidado corporal",
+      "Rejuvenecimiento"
+    ],
   },
-  
+
   testimonials: [
     {
-      name: "Cliente Satisfecho",
+      name: "Lucía",
       text: "Excelente servicio y profesionalidad. Muy recomendado.",
       rating: 5,
-      username: "@cliente_feliz"
-    }
-  ]
+      username: "@Lu.nails",
+    },
+  ],
 };
-
-// Import client configuration
-import { CLIENT_CONFIG } from './client-config';
 
 // Business configuration selector based on environment or deployment
 export const getBusinessConfig = (): BusinessConfig => {
@@ -203,7 +256,7 @@ export const getBusinessConfig = (): BusinessConfig => {
   // - Database: dynamic config loading
   // - External config service: API calls
   // - Build-time configuration: different imports per build
-  
+
   // For demo purposes, return the client config
   // In production, you might do: return process.env.NODE_ENV === 'development' ? DEFAULT_BUSINESS_CONFIG : CLIENT_CONFIG;
   return CLIENT_CONFIG;
@@ -212,18 +265,23 @@ export const getBusinessConfig = (): BusinessConfig => {
 // Utility functions for config values
 export const formatPrice = (price: string, config: BusinessConfig): string => {
   const { symbol, position } = config.currency;
-  return position === 'before' ? `${symbol}${price}` : `${price}${symbol}`;
+  return position === "before" ? `${symbol}${price}` : `${price}${symbol}`;
 };
 
-export const getBusinessTypeLabel = (type: BusinessConfig['businessType']): string => {
+export const getBusinessTypeLabel = (
+  type: BusinessConfig["businessType"],
+): string => {
   const labels = {
-    peluqueria: 'Peluquería',
-    barberia: 'Barbería', 
-    clinica_estetica: 'Clínica Estética'
+    clinica_estetica: "Clínica Estética",
+    spa: "Spa & Wellness",
+    centro_bienestar: "Centro de Bienestar",
   };
   return labels[type];
 };
 
-export const getFormattedHours = (day: keyof BusinessConfig['hours'], config: BusinessConfig): string => {
-  return config.hours[day] || 'Cerrado';
+export const getFormattedHours = (
+  day: keyof BusinessConfig["hours"],
+  config: BusinessConfig,
+): string => {
+  return config.hours[day] || "Cerrado";
 };

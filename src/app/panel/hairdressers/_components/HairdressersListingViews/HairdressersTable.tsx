@@ -1,6 +1,6 @@
 "use client";
 
-import type { Hairdresser } from "@/util/types";
+import type { Professional } from "@/util/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,15 +21,17 @@ import {
 } from "@/components/ui/table";
 
 interface HairdressersTableProps {
-  hairdressers: Hairdresser[];
+  professionals: Professional[];
   onToggleActive: (id: string, currentStatus: boolean) => Promise<void>;
-  onEditHairdresser: (hairdresser: Hairdresser) => void;
+  onEditHairdresser: (hairdresser: Professional) => void;
+  onDeleteHairdresser: (hairdresser: Professional) => void;
 }
 
 export default function HairdressersTable({
-  hairdressers,
+  professionals,
   onToggleActive,
   onEditHairdresser,
+  onDeleteHairdresser,
 }: HairdressersTableProps) {
   const getInitials = (name: string) => {
     return name
@@ -39,12 +41,11 @@ export default function HairdressersTable({
       .toUpperCase();
   };
 
-
   return (
     <Table>
       <TableHeader className="bg-gray-200">
         <TableRow>
-          <TableHead>Peluquero</TableHead>
+          <TableHead>Profesional</TableHead>
           <TableHead>Contacto</TableHead>
           <TableHead>Horario</TableHead>
           <TableHead>Servicios</TableHead>
@@ -53,74 +54,84 @@ export default function HairdressersTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {hairdressers.map((hairdresser) => (
-          <TableRow key={hairdresser.id} className="py-2">
+        {professionals && professionals.length > 0 ? professionals.map((professional) => (
+          <TableRow key={professional.id} className="py-2">
             <TableCell>
               <div className="flex items-center space-x-3">
                 <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">
-                  {hairdresser.photo ? (
+                  {professional.photo ? (
                     <img
-                      src={hairdresser.photo}
-                      alt={hairdresser.name}
+                      src={professional.photo}
+                      alt={professional.name}
                       className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-neutral-200 text-sm font-medium text-neutral-600">
-                      {getInitials(hairdresser.name)}
+                      {getInitials(professional.name)}
                     </div>
                   )}
                 </div>
                 <div>
                   <p className="font-medium text-neutral-900">
-                    {hairdresser.name}
+                    {professional.name}
                   </p>
                 </div>
               </div>
             </TableCell>
             <TableCell>
               <div className="space-y-1">
-                <p className="text-sm text-neutral-900">{hairdresser.email}</p>
-                <p className="text-sm text-neutral-500">{hairdresser.phone}</p>
+                <p className="text-sm text-neutral-900">{professional.email}</p>
+                <p className="text-sm text-neutral-500">{professional.phone}</p>
               </div>
             </TableCell>
             <TableCell>
               <div className="space-y-1">
-                {hairdresser.schedule.weeklySchedule ? (
+                {professional.schedule.weeklySchedule ? (
                   <div className="space-y-1">
-                    {hairdresser.schedule.weeklySchedule
-                      .filter(day => day.isWorkingDay)
-                      .map(day => (
+                    {professional.schedule.weeklySchedule
+                      .filter((day) => day.isWorkingDay)
+                      .map((day) => (
                         <div key={day.dayOfWeek} className="text-xs">
-                          <span className="font-medium capitalize">{day.dayOfWeek.slice(0,3)}</span>: 
-                          {day.workingPeriods.map(period => 
-                            ` ${period.startTime}-${period.endTime}`
-                          ).join(', ')}
+                          <span className="font-medium capitalize">
+                            {day.dayOfWeek.slice(0, 3)}
+                          </span>
+                          :
+                          {day.workingPeriods && day.workingPeriods.length > 0
+                            ? day.workingPeriods
+                                .map(
+                                  (period) =>
+                                    ` ${period.startTime}-${period.endTime}`,
+                                )
+                                .join(", ")
+                            : " Sin horario"}
                         </div>
                       ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">Sin horario configurado</p>
+                  <p className="text-sm text-gray-500">
+                    Sin horario configurado
+                  </p>
                 )}
               </div>
             </TableCell>
             <TableCell>
               <div className="flex flex-wrap gap-1">
                 <Badge variant="outline" className="text-sm">
-                  {hairdresser.services.length}
+                  {professional.services?.length || 0}
                 </Badge>
               </div>
             </TableCell>
             <TableCell>
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  checked={hairdresser.isActive}
+                  checked={professional.isActive}
                   onCheckedChange={() =>
-                    onToggleActive(hairdresser.id, hairdresser.isActive)
+                    onToggleActive(professional.id, professional.isActive)
                   }
                   className="cursor-pointer data-[state=checked]:bg-green-600 data-[state=checked]:text-white"
                 />
                 <span className="text-sm text-neutral-500">
-                  {hairdresser.isActive ? "Activo" : "Inactivo"}
+                  {professional.isActive ? "Activo" : "Inactivo"}
                 </span>
               </div>
             </TableCell>
@@ -146,13 +157,13 @@ export default function HairdressersTable({
                 <DropdownMenuContent className="rounded-xl bg-white shadow-lg">
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => onEditHairdresser(hairdresser)}
+                    onClick={() => onEditHairdresser(professional)}
                   >
                     Editar
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600"
-                    onClick={() => onEditHairdresser(hairdresser)}
+                    onClick={() => onDeleteHairdresser(professional)}
                   >
                     Eliminar
                   </DropdownMenuItem>
@@ -160,7 +171,13 @@ export default function HairdressersTable({
               </DropdownMenu>
             </TableCell>
           </TableRow>
-        ))}
+        )) : (
+          <TableRow>
+            <TableCell colSpan={6} className="text-center py-4">
+              No hay profesionales disponibles
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );

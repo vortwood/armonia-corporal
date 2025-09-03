@@ -1,13 +1,13 @@
 "use client";
 
-import { Hairdresser } from "@/util/types";
+import { Professional } from "@/util/types";
 
 interface NoResultsProps {
-  hairdresserSelected: string;
-  hairdressers: Hairdresser[];
+  professionalSelected: string;
+  professionals: Professional[];
 }
 
-export function NoResults({ hairdresserSelected, hairdressers }: NoResultsProps) {
+export function NoResults({ professionalSelected, professionals }: NoResultsProps) {
   return (
     <div className="rounded-2xl bg-white p-16 text-center shadow-lg">
       <svg
@@ -27,8 +27,8 @@ export function NoResults({ hairdresserSelected, hairdressers }: NoResultsProps)
         No hay citas programadas
       </h3>
       <p className="mt-2 text-lg text-gray-500">
-        {hairdresserSelected
-          ? `No hay citas programadas para ${hairdressers.find((h) => h.id === hairdresserSelected)?.name}`
+        {professionalSelected
+          ? `No hay citas programadas para ${professionals.find((h) => h.id === professionalSelected)?.name}`
           : "No hay citas programadas para los próximos días"}
       </p>
     </div>

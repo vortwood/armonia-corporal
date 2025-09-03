@@ -20,7 +20,7 @@ const data = [
     isActive: true,
   },
   {
-    title: "Peluqueros",
+    title: "Profesionales",
     url: "/panel/hairdressers",
     icon: Users,
     isActive: true,
@@ -44,9 +44,9 @@ export function MobileNav() {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="bg-white rounded-xl flex items-center justify-between border-b p-4 md:hidden">
+    <div className="flex items-center justify-between rounded-xl border-b bg-white p-4 md:hidden">
       <div className="flex items-center gap-2">
-        <h1 className="text-lg font-semibold">Baraja Studio</h1>
+        <h1 className="text-lg font-semibold">Armonía Corporal</h1>
       </div>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
@@ -64,8 +64,7 @@ export function MobileNav() {
               {data.map((item) => {
                 const Icon = item.icon;
                 const isActive =
-                  pathname === item.url ||
-                  pathname.endsWith(item.url);
+                  pathname === item.url || pathname.endsWith(item.url);
 
                 return (
                   <Link
@@ -73,7 +72,7 @@ export function MobileNav() {
                     href={item.url}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "text-muted-foreground hover:text-primary border border-transparent flex items-center gap-3 rounded-xl px-3 py-2 text-lg transition-all",
+                      "text-muted-foreground hover:text-primary flex items-center gap-3 rounded-xl border border-transparent px-3 py-2 text-lg transition-all",
                       isActive && "border-black text-black",
                     )}
                   >

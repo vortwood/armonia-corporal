@@ -1,11 +1,15 @@
-import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
-import db from "../firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+
+import { getProfessionalById, validateAppointment } from "../dynamicScheduling";
 import { sendEmail } from "../email/resend";
-import { validateAppointment, getHairdresserById } from "../dynamicScheduling";
+import db from "../firestore";
 import type { SubmitResponse } from "../types";
 
 // Rate limiting map (in production, use Redis)
-const submissionAttempts = new Map<string, { count: number; lastAttempt: number }>();
+const submissionAttempts = new Map<
+  string,
+  { count: number; lastAttempt: number }
+>();
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 
@@ -15,7 +19,7 @@ interface EnhancedFormData {
   email: string;
   hora: string;
   selectedServices: string[];
-  hairdresserId: string;
+  professionalId: string;
   selectedDate: string;
   selectedTime: string;
   totalPrice: number;
@@ -24,39 +28,45 @@ interface EnhancedFormData {
 /**
  * Enhanced form submission with security validation and rate limiting
  */
-export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<SubmitResponse> {
+export async function enhancedHandleSubmit(
+  formData: EnhancedFormData,
+): Promise<SubmitResponse> {
   try {
     // Input validation and sanitization
     const validation = validateInput(formData);
     if (!validation.valid) {
-      return { success: false, error: validation.error, errorType: "VALIDATION_ERROR" };
+      return {
+        success: false,
+        error: validation.error,
+        errorType: "VALIDATION_ERROR",
+      };
     }
 
     // Rate limiting check
     const rateLimitCheck = checkRateLimit(formData.email);
     if (!rateLimitCheck.allowed) {
-      return { 
-        success: false, 
-        error: "Demasiados intentos. Intenta nuevamente en unos minutos.", 
-        errorType: "VALIDATION_ERROR" 
+      return {
+        success: false,
+        error: "Demasiados intentos. Intenta nuevamente en unos minutos.",
+        errorType: "VALIDATION_ERROR",
       };
     }
 
     // Server-side appointment validation
     const selectedDate = new Date(formData.selectedDate);
     const appointmentValidation = await validateAppointment(
-      formData.hairdresserId,
+      formData.professionalId,
       selectedDate,
       formData.selectedTime,
-      formData.selectedServices
+      formData.selectedServices,
     );
 
     if (!appointmentValidation.valid) {
       recordAttempt(formData.email);
-      return { 
-        success: false, 
-        error: appointmentValidation.error || "Error de validación", 
-        errorType: "VALIDATION_ERROR" 
+      return {
+        success: false,
+        error: appointmentValidation.error || "Error de validación",
+        errorType: "VALIDATION_ERROR",
       };
     }
 
@@ -67,14 +77,14 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
       return conflictCheck;
     }
 
-    // Get hairdresser information
-    const hairdresser = await getHairdresserById(formData.hairdresserId);
-    if (!hairdresser) {
+    // Get professional information
+    const professional = await getProfessionalById(formData.professionalId);
+    if (!professional) {
       recordAttempt(formData.email);
-      return { 
-        success: false, 
-        error: "Peluquero no encontrado", 
-        errorType: "VALIDATION_ERROR" 
+      return {
+        success: false,
+        error: "Profesional no encontrado",
+        errorType: "VALIDATION_ERROR",
       };
     }
 
@@ -84,13 +94,13 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
       name: formData.name,
       phone: formData.phone,
       mail: formData.email,
-      
+
       // Appointment details
       hora: formData.hora,
       tipos: formData.selectedServices,
-      persona: hairdresser.name, // Keep for compatibility with existing code
-      hairdresserId: formData.hairdresserId,
-      
+      persona: professional.name, // Keep for compatibility with existing code
+      professionalId: formData.professionalId,
+
       // Additional metadata
       totalPrice: formData.totalPrice,
       status: "confirmed",
@@ -103,10 +113,10 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
     } catch (error) {
       console.error("Error saving appointment:", error);
       recordAttempt(formData.email);
-      return { 
-        success: false, 
-        error: "Error al guardar la reserva", 
-        errorType: "SERVER_ERROR" 
+      return {
+        success: false,
+        error: "Error al guardar la reserva",
+        errorType: "SERVER_ERROR",
       };
     }
 
@@ -118,22 +128,24 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
         hora: formData.hora,
         tipos: formData.selectedServices,
         phone: formData.phone,
-        persona: hairdresser.name,
+        persona: professional.name,
       });
 
       const emailResult = await sendEmail({
-        to: [{
-          email: formData.email,
-          name: formData.name,
-          hora: formData.hora,
-          tipos: formData.selectedServices,
-          phone: formData.phone,
-          persona: hairdresser.name,
-        }]
+        to: [
+          {
+            email: formData.email,
+            name: formData.name,
+            hora: formData.hora,
+            tipos: formData.selectedServices,
+            phone: formData.phone,
+            persona: professional.name,
+          },
+        ],
       });
 
       console.log("Email sending result:", emailResult);
-      
+
       if (!emailResult.success) {
         console.error("Email failed with error:", emailResult.error);
       }
@@ -146,14 +158,13 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
     submissionAttempts.delete(formData.email);
 
     return { success: true };
-
   } catch (error) {
     console.error("Enhanced form submission error:", error);
     recordAttempt(formData.email);
-    return { 
-      success: false, 
-      error: "Error interno del servidor", 
-      errorType: "SERVER_ERROR" 
+    return {
+      success: false,
+      error: "Error interno del servidor",
+      errorType: "SERVER_ERROR",
     };
   }
 }
@@ -161,7 +172,10 @@ export async function enhancedHandleSubmit(formData: EnhancedFormData): Promise<
 /**
  * Validates and sanitizes input data
  */
-function validateInput(formData: EnhancedFormData): { valid: boolean; error?: string } {
+function validateInput(formData: EnhancedFormData): {
+  valid: boolean;
+  error?: string;
+} {
   // Regex patterns
   const URUGUAYAN_PHONE_REGEX = /^(09\d{7})$/;
   const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -179,7 +193,10 @@ function validateInput(formData: EnhancedFormData): { valid: boolean; error?: st
   }
 
   // Validate email
-  if (!EMAIL_REGEX.test(formData.email.toLowerCase()) || formData.email.length > 100) {
+  if (
+    !EMAIL_REGEX.test(formData.email.toLowerCase()) ||
+    formData.email.length > 100
+  ) {
     return { valid: false, error: "Email inválido" };
   }
 
@@ -189,7 +206,10 @@ function validateInput(formData: EnhancedFormData): { valid: boolean; error?: st
   }
 
   // Validate required fields
-  if (!formData.hora || !formData.hairdresserId) {
+  console.log("VALIDATION - hora:", formData.hora);
+  console.log("VALIDATION - professionalId:", formData.professionalId);
+  if (!formData.hora || !formData.professionalId) {
+    console.log("VALIDATION FAILED - Missing required fields");
     return { valid: false, error: "Datos de reserva incompletos" };
   }
 
@@ -206,7 +226,10 @@ function validateInput(formData: EnhancedFormData): { valid: boolean; error?: st
     selectedDate.setHours(0, 0, 0, 0);
 
     if (selectedDate < now) {
-      return { valid: false, error: "No se pueden agendar citas en fechas pasadas" };
+      return {
+        valid: false,
+        error: "No se pueden agendar citas en fechas pasadas",
+      };
     }
   } catch {
     return { valid: false, error: "Fecha inválida" };
@@ -221,9 +244,9 @@ function validateInput(formData: EnhancedFormData): { valid: boolean; error?: st
 function checkRateLimit(identifier: string): { allowed: boolean } {
   const now = Date.now();
   const key = identifier.toLowerCase();
-  
+
   const attempts = submissionAttempts.get(key);
-  
+
   if (!attempts) {
     return { allowed: true };
   }
@@ -243,43 +266,48 @@ function checkRateLimit(identifier: string): { allowed: boolean } {
 function recordAttempt(identifier: string): void {
   const now = Date.now();
   const key = identifier.toLowerCase();
-  
-  const attempts = submissionAttempts.get(key) || { count: 0, lastAttempt: now };
-  
+
+  const attempts = submissionAttempts.get(key) || {
+    count: 0,
+    lastAttempt: now,
+  };
+
   attempts.count += 1;
   attempts.lastAttempt = now;
-  
+
   submissionAttempts.set(key, attempts);
 }
 
 /**
  * Final conflict check before saving to database
  */
-async function checkFinalConflicts(formData: EnhancedFormData): Promise<SubmitResponse> {
+async function checkFinalConflicts(
+  formData: EnhancedFormData,
+): Promise<SubmitResponse> {
   try {
     // Check unified appointments collection only
     const appointmentQuery = query(
       collection(db, "appointments"),
-      where("hairdresserId", "==", formData.hairdresserId),
-      where("hora", "==", formData.hora)
+      where("professionalId", "==", formData.professionalId),
+      where("hora", "==", formData.hora),
     );
-    
+
     const appointmentSnapshot = await getDocs(appointmentQuery);
     if (!appointmentSnapshot.empty) {
-      return { 
-        success: false, 
-        error: "Este horario ya fue reservado por otro cliente", 
-        errorType: "SCHEDULE_CONFLICT" 
+      return {
+        success: false,
+        error: "Este horario ya fue reservado por otro cliente",
+        errorType: "SCHEDULE_CONFLICT",
       };
     }
 
     return { success: true };
   } catch (error) {
     console.error("Error checking conflicts:", error);
-    return { 
-      success: false, 
-      error: "Error verificando disponibilidad", 
-      errorType: "SERVER_ERROR" 
+    return {
+      success: false,
+      error: "Error verificando disponibilidad",
+      errorType: "SERVER_ERROR",
     };
   }
 }

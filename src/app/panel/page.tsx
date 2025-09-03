@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 
 import {
-  getActiveHairdressers,
+  getActiveProfessionals,
   getActiveServices,
 } from "@/util/dynamicScheduling";
 import db from "@/util/firestore";
-import { Hairdresser, Service } from "@/util/types";
+import { Professional, Service } from "@/util/types";
 import {
   collection,
   doc,
@@ -38,8 +38,8 @@ interface ModalData {
 export default function AppointmentsPage() {
   const [items, setItems] = useState<DocumentData[]>([]);
   const [reRender, setReRender] = useState(false);
-  const [hairdresserSelected, setHairdresserSelected] = useState<string>("");
-  const [hairdressers, setHairdressers] = useState<Hairdresser[]>([]);
+  const [professionalSelected, setProfessionalSelected] = useState<string>("");
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
@@ -52,19 +52,19 @@ export default function AppointmentsPage() {
   });
 
   useEffect(() => {
-    const loadHairdressersAndServices = async () => {
-      const [activeHairdressers, activeServices] = await Promise.all([
-        getActiveHairdressers(),
+    const loadProfessionalsAndServices = async () => {
+      const [activeProfessionals, activeServices] = await Promise.all([
+        getActiveProfessionals(),
         getActiveServices(),
       ]);
-      setHairdressers(activeHairdressers);
+      setProfessionals(activeProfessionals);
       setServices(activeServices);
     };
 
     // Don't set default date range - let it show all future appointments by default
     // Date range will only be applied when user explicitly sets it
 
-    loadHairdressersAndServices();
+    loadProfessionalsAndServices();
   }, []);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function AppointmentsPage() {
       try {
         let allItems: DocumentData[] = [];
 
-        if (hairdresserSelected === "" || hairdresserSelected === "all") {
+        if (professionalSelected === "" || professionalSelected === "all") {
           // Load appointments based on current filter mode for performance
           let appointmentsQuery;
 
@@ -116,27 +116,27 @@ export default function AppointmentsPage() {
 
           allItems = appointmentsSnapshot.docs.map((doc) => {
             const data = doc.data();
-            // Find hairdresser name by ID
-            const hairdresser = hairdressers.find(
-              (h) => h.id === data.hairdresserId,
+            // Find professional name by ID
+            const professional = professionals.find(
+              (h) => h.id === data.professionalId,
             );
             return {
               ...data,
               id: doc.id,
-              stylist: hairdresser?.name || data.hairdresserName || "Unknown",
+              stylist: professional?.name || data.professionalName || "Unknown",
               collection: "appointments",
             };
           });
         } else {
-          // Load appointments for specific hairdresser
+          // Load appointments for specific professional
           console.log(
-            `Loading appointments for hairdresser: ${hairdresserSelected}`,
+            `Loading appointments for professional: ${professionalSelected}`,
           );
-          const hairdresserInfo = hairdressers.find(
-            (h) => h.id === hairdresserSelected,
+          const professionalInfo = professionals.find(
+            (h) => h.id === professionalSelected,
           );
 
-          if (hairdresserInfo) {
+          if (professionalInfo) {
             let appointmentsQuery;
 
             if (showTodayOnly) {
@@ -145,21 +145,21 @@ export default function AppointmentsPage() {
               const todayEnd = `${todayUI} - 23:59`;
               appointmentsQuery = query(
                 collection(db, "appointments"),
-                where("hairdresserId", "==", hairdresserSelected),
+                where("professionalId", "==", professionalSelected),
                 where("hora", ">=", todayStart),
                 where("hora", "<=", todayEnd),
               );
             } else if (dateFrom || dateTo) {
-              // Hairdresser + date range - load all appointments for this hairdresser
+              // Hairdresser + date range - load all appointments for this professional
               // Firebase string comparison doesn't work correctly for DD/MM/YYYY format across months
               console.log(
-                "Loading all appointments for hairdresser date range filtering:",
-                { hairdresserSelected, dateFrom, dateTo },
+                "Loading all appointments for professional date range filtering:",
+                { professionalSelected, dateFrom, dateTo },
               );
 
               appointmentsQuery = query(
                 collection(db, "appointments"),
-                where("hairdresserId", "==", hairdresserSelected),
+                where("professionalId", "==", professionalSelected),
               );
             } else {
               // Hairdresser + next 7 days
@@ -169,7 +169,7 @@ export default function AppointmentsPage() {
               const next7DaysEnd = `${next7Days.getDate().toString().padStart(2, "0")}/${(next7Days.getMonth() + 1).toString().padStart(2, "0")}/${next7Days.getFullYear()} - 23:59`;
               appointmentsQuery = query(
                 collection(db, "appointments"),
-                where("hairdresserId", "==", hairdresserSelected),
+                where("professionalId", "==", professionalSelected),
                 where("hora", ">=", todayStart),
                 where("hora", "<=", next7DaysEnd),
               );
@@ -177,7 +177,7 @@ export default function AppointmentsPage() {
 
             const appointmentsSnapshot = await getDocs(appointmentsQuery);
             console.log(
-              "Found appointments for hairdresser:",
+              "Found appointments for professional:",
               appointmentsSnapshot.docs.length,
             );
 
@@ -185,14 +185,14 @@ export default function AppointmentsPage() {
               const data = doc.data();
               console.log("Found filtered appointment:", {
                 id: doc.id,
-                hairdresserId: data.hairdresserId,
+                professionalId: data.professionalId,
                 hora: data.hora,
-                stylist: hairdresserInfo.name,
+                stylist: professionalInfo.name,
               });
               return {
                 ...data,
                 id: doc.id,
-                stylist: hairdresserInfo.name,
+                stylist: professionalInfo.name,
                 collection: "appointments",
               };
             });
@@ -272,8 +272,8 @@ export default function AppointmentsPage() {
     fetchItems();
   }, [
     reRender,
-    hairdresserSelected,
-    hairdressers,
+    professionalSelected,
+    professionals,
     dateFrom,
     dateTo,
     showTodayOnly,
@@ -337,9 +337,9 @@ export default function AppointmentsPage() {
     }, {});
   };
 
-  // Función para generar un color único para cada peluquero
-  const getHairdresserColor = (hairdresserName: string) => {
-    // Generate consistent colors based on hairdresser name
+  // Función para generar un color único para cada profesional
+  const getHairdresserColor = (professionalName: string) => {
+    // Generate consistent colors based on professional name
     const colors = [
       {
         border: "border-l-blue-500",
@@ -380,7 +380,7 @@ export default function AppointmentsPage() {
     ];
 
     // Use hash of name to get consistent color
-    const hash = hairdresserName.split("").reduce((a, b) => {
+    const hash = professionalName.split("").reduce((a, b) => {
       a = (a << 5) - a + b.charCodeAt(0);
       return a & a;
     }, 0);
@@ -690,9 +690,9 @@ export default function AppointmentsPage() {
       <AppointmentFilters
         showTodayOnly={showTodayOnly}
         setShowTodayOnly={setShowTodayOnly}
-        hairdresserSelected={hairdresserSelected}
-        setHairdresserSelected={setHairdresserSelected}
-        hairdressers={hairdressers}
+        professionalSelected={professionalSelected}
+        setProfessionalSelected={setProfessionalSelected}
+        professionals={professionals}
         dateFrom={dateFrom}
         setDateFrom={setDateFrom}
         dateTo={dateTo}
@@ -854,8 +854,8 @@ export default function AppointmentsPage() {
           />
         ) : (
           <NoResults
-            hairdresserSelected={hairdresserSelected}
-            hairdressers={hairdressers}
+            professionalSelected={professionalSelected}
+            professionals={professionals}
           />
         )}
       </div>

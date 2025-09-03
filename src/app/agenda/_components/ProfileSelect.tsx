@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Hairdresser } from "@/util/types";
+
+import { Professional } from "@/util/types";
 
 // Componente ProfileSelect personalizado
 export function ProfileSelect({
@@ -11,7 +12,7 @@ export function ProfileSelect({
 }: {
   value: string;
   onChange: (value: string) => void;
-  personas: Hairdresser[];
+  personas: Professional[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedPerson = personas.find((person) => person.id === value);
@@ -21,7 +22,7 @@ export function ProfileSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="text-md flex w-full items-center justify-between rounded-xl border bg-white p-3 px-4 shadow-lg outline-none transition-colors"
+        className="text-md flex w-full items-center justify-between rounded-xl border bg-white p-3 px-4 shadow-lg transition-colors outline-none"
       >
         {selectedPerson ? (
           <div className="flex items-center">
@@ -51,7 +52,7 @@ export function ProfileSelect({
             <span className="text-lg font-medium">{selectedPerson.name}</span>
           </div>
         ) : (
-          <span className="bg-white">Seleccionar peluquero...</span>
+          <span className="bg-white">Seleccionar profesional...</span>
         )}
         <svg
           className={`ml-2 h-4 w-4 shrink-0 opacity-50 transition-transform ${isOpen ? "rotate-180" : ""}`}

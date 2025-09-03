@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAvailableTimeSlots } from "@/util/dynamicScheduling";
 
 /**
- * GET /api/availability?hairdresserId={id}&date={YYYY-MM-DD}
- * Returns available time slots for a hairdresser on a specific date
+ * GET /api/availability?professionalId={id}&date={YYYY-MM-DD}
+ * Returns available time slots for a professional on a specific date
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const hairdresserId = searchParams.get('hairdresserId');
+    const professionalId = searchParams.get('professionalId');
     const dateString = searchParams.get('date');
 
-    if (!hairdresserId || !dateString) {
+    if (!professionalId || !dateString) {
       return NextResponse.json(
-        { success: false, error: 'Missing hairdresserId or date parameter' },
+        { success: false, error: 'Missing professionalId or date parameter' },
         { status: 400 }
       );
     }
@@ -28,13 +28,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Get available time slots
-    const availableSlots = await getAvailableTimeSlots(hairdresserId, selectedDate);
+    const availableSlots = await getAvailableTimeSlots(professionalId, selectedDate);
     
     return NextResponse.json({
       success: true,
       availableSlots,
       date: dateString,
-      hairdresserId
+      professionalId
     });
 
   } catch (error) {

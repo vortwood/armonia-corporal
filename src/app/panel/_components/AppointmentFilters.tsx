@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Hairdresser } from "@/util/types";
+import { Professional } from "@/util/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -26,9 +26,9 @@ import { Separator } from "@/components/ui/separator";
 interface AppointmentFiltersProps {
   showTodayOnly: boolean;
   setShowTodayOnly: (show: boolean) => void;
-  hairdresserSelected: string;
-  setHairdresserSelected: (id: string) => void;
-  hairdressers: Hairdresser[];
+  professionalSelected: string;
+  setProfessionalSelected: (id: string) => void;
+  professionals: Professional[];
   dateFrom: string;
   setDateFrom: (date: string) => void;
   dateTo: string;
@@ -38,9 +38,9 @@ interface AppointmentFiltersProps {
 export function AppointmentFilters({
   showTodayOnly,
   setShowTodayOnly,
-  hairdresserSelected,
-  setHairdresserSelected,
-  hairdressers,
+  professionalSelected,
+  setProfessionalSelected,
+  professionals,
   dateFrom,
   setDateFrom,
   dateTo,
@@ -92,11 +92,11 @@ export function AppointmentFilters({
                 if (newShowTodayOnly) {
                   setDateFrom("");
                   setDateTo("");
-                  setHairdresserSelected("");
+                  setProfessionalSelected("");
                 } else {
                   setDateFrom("");
                   setDateTo("");
-                  setHairdresserSelected("");
+                  setProfessionalSelected("");
                 }
               }}
               className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
@@ -110,18 +110,18 @@ export function AppointmentFilters({
             </button>
           </div>
 
-          {/* Hairdresser Filter */}
+          {/* Professional Filter */}
           <div className="space-y-2">
             <label
               className={`block text-sm font-medium ${
                 showTodayOnly ? "text-gray-400" : "text-gray-700"
               }`}
             >
-              Filtrar por peluquero
+              Filtrar por profesional
             </label>
             <Select
-              value={showTodayOnly ? "all" : hairdresserSelected}
-              onValueChange={(value) => setHairdresserSelected(value)}
+              value={showTodayOnly ? "all" : professionalSelected}
+              onValueChange={(value) => setProfessionalSelected(value)}
               disabled={showTodayOnly}
             >
               <SelectTrigger
@@ -133,18 +133,18 @@ export function AppointmentFilters({
               >
                 {showTodayOnly
                   ? "No disponible en vista diaria"
-                  : "Todos los peluqueros"}
+                  : "Todos los profesionales"}
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">Todos los peluqueros</SelectItem>
+                <SelectItem value="all">Todos los profesionales</SelectItem>
                 {!showTodayOnly &&
-                  hairdressers.map((hairdresser) => (
+                  professionals.map((professional) => (
                     <SelectItem
-                      key={hairdresser.id}
-                      value={hairdresser.id}
+                      key={professional.id}
+                      value={professional.id}
                       className="cursor-pointer"
                     >
-                      {hairdresser.name}
+                      {professional.name}
                     </SelectItem>
                   ))}
               </SelectContent>

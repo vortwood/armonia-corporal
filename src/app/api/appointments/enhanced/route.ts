@@ -5,6 +5,11 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.json();
     
+    console.log("API - Received form data:", formData);
+    console.log("API - professionalId:", formData.professionalId);
+    console.log("API - hora:", formData.hora);
+    console.log("API - selectedServices:", formData.selectedServices);
+    
     // Call the server-side submission handler
     const result = await enhancedHandleSubmit(formData);
     

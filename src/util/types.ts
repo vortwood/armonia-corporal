@@ -84,7 +84,7 @@ export interface DaySchedule {
 }
 
 // New admin system types
-export interface Hairdresser {
+export interface Professional {
   id: string;
   name: string;
   email: string;
@@ -115,7 +115,7 @@ export interface Service {
 }
 
 export interface AppointmentMetrics {
-  hairdresserId: string;
+  professionalId: string;
   month: string; // 'YYYY-MM'
   totalAppointments: number;
   totalRevenue: number;

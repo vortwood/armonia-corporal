@@ -3,11 +3,10 @@
 import { usePathname } from "next/navigation";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Footer } from "@/components/Landing/footer";
+import Footer from "@/components/Landing/Footer";
 
 import { AppSidebar } from "./AppSidebar";
 import { MobileNav } from "./MobileNav";
-import SocialMediaFixed from "./Landing/SocialMediaFixed";
 
 export default function LayoutWrapper({
   children,
@@ -20,7 +19,6 @@ export default function LayoutWrapper({
   if (!isPanelRoute) {
     return (
       <>
-        <SocialMediaFixed />
         {children}
         <Footer />
       </>

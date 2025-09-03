@@ -1,7 +1,9 @@
-import { Card, CardContent } from "@/components/ui/Card"
-import { useEffect, useState, useCallback } from "react"
-import { getAvailableTimeSlots } from "@/util/dynamicScheduling"
-import type { TimeSlot, Hairdresser } from "@/util/types"
+import { useCallback, useEffect, useState } from "react";
+
+import { getAvailableTimeSlots } from "@/util/dynamicScheduling";
+import type { Professional, TimeSlot } from "@/util/types";
+
+import { Card, CardContent } from "@/components/ui/Card";
 
 // Extended interface to include if the time has passed
 interface ExtendedTimeSlot extends TimeSlot {
@@ -9,52 +11,55 @@ interface ExtendedTimeSlot extends TimeSlot {
 }
 
 interface TimeSelectProps {
-  selectedTime: string
-  onSelect: (time: string) => void
-  selectedHairdresser: Hairdresser | null
-  selectedDate: Date | null
-  onError?: (error: string) => void
-  onLoading?: (loading: boolean) => void
+  selectedTime: string;
+  onSelect: (time: string) => void;
+  selectedProfessional: Professional | null;
+  selectedDate: Date | null;
+  onError?: (error: string) => void;
+  onLoading?: (loading: boolean) => void;
 }
 
-export default function TimeSelect({ 
-  selectedTime, 
+export default function TimeSelect({
+  selectedTime,
   onSelect,
-  selectedHairdresser,
+  selectedProfessional,
   selectedDate,
   onError,
-  onLoading
+  onLoading,
 }: TimeSelectProps) {
-  const [timeSlots, setTimeSlots] = useState<ExtendedTimeSlot[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [timeSlots, setTimeSlots] = useState<ExtendedTimeSlot[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Function to check if a time has passed for today
-  const hasTimePassed = useCallback((timeString: string, date: Date): boolean => {
-    const today = new Date();
-    const selectedDateString = date.toDateString();
-    const todayString = today.toDateString();
+  const hasTimePassed = useCallback(
+    (timeString: string, date: Date): boolean => {
+      const today = new Date();
+      const selectedDateString = date.toDateString();
+      const todayString = today.toDateString();
 
-    // If the selected date is not today, time hasn't passed
-    if (selectedDateString !== todayString) {
-      return false;
-    }
+      // If the selected date is not today, time hasn't passed
+      if (selectedDateString !== todayString) {
+        return false;
+      }
 
-    // Parse the time string (format: "HH:MM")
-    const [hours, minutes] = timeString.split(":").map(Number);
-    const timeToCheck = new Date();
-    timeToCheck.setHours(hours, minutes, 0, 0);
+      // Parse the time string (format: "HH:MM")
+      const [hours, minutes] = timeString.split(":").map(Number);
+      const timeToCheck = new Date();
+      timeToCheck.setHours(hours, minutes, 0, 0);
 
-    // Add 15-minute buffer to prevent last-minute bookings
-    const currentTimeWithBuffer = new Date(today.getTime() + 15 * 60 * 1000);
+      // Add 15-minute buffer to prevent last-minute bookings
+      const currentTimeWithBuffer = new Date(today.getTime() + 15 * 60 * 1000);
 
-    // Compare with current time plus buffer
-    return timeToCheck <= currentTimeWithBuffer;
-  }, []);
+      // Compare with current time plus buffer
+      return timeToCheck <= currentTimeWithBuffer;
+    },
+    [],
+  );
 
-  // Fetch available time slots when date or hairdresser changes
+  // Fetch available time slots when date or professionals changes
   const fetchTimeSlots = useCallback(async () => {
-    if (!selectedHairdresser || !selectedDate) {
+    if (!selectedProfessional || !selectedDate) {
       setTimeSlots([]);
       return;
     }
@@ -64,10 +69,13 @@ export default function TimeSelect({
     onLoading?.(true);
 
     try {
-      const availableSlots = await getAvailableTimeSlots(selectedHairdresser.id, selectedDate);
-      
+      const availableSlots = await getAvailableTimeSlots(
+        selectedProfessional.id,
+        selectedDate,
+      );
+
       // Add hasPassed flag to each slot
-      const slotsWithStatus = availableSlots.map(slot => ({
+      const slotsWithStatus = availableSlots.map((slot) => ({
         ...slot,
         hasPassed: hasTimePassed(slot.time, selectedDate),
         available: slot.available && !hasTimePassed(slot.time, selectedDate),
@@ -84,7 +92,7 @@ export default function TimeSelect({
       setLoading(false);
       onLoading?.(false);
     }
-  }, [selectedHairdresser, selectedDate, hasTimePassed, onError, onLoading]);
+  }, [selectedProfessional, selectedDate, hasTimePassed, onError, onLoading]);
 
   // Fetch time slots when dependencies change
   useEffect(() => {
@@ -176,7 +184,7 @@ export default function TimeSelect({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {timeSlots.map((slot, index) => (
           <Card
             key={index}
@@ -186,8 +194,8 @@ export default function TimeSelect({
               slot.hasPassed
                 ? "Hora ya pasada"
                 : !slot.available
-                ? "Horario ocupado"
-                : "Horario disponible"
+                  ? "Horario ocupado"
+                  : "Horario disponible"
             }
           >
             <CardContent className="p-3 text-center">
@@ -197,5 +205,5 @@ export default function TimeSelect({
         ))}
       </div>
     </div>
-  )
+  );
 }
