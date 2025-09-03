@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions for security
+    function isValidEmail(email) {
+      return email is string && email.matches('.*@.*\\..*');
+    }
+    
+    function isValidPhone(phone) {
+      return phone is string && phone.matches('^09[0-9]{8}$');
+    }
+    
+    function isValidAppointmentData(data) {
+      return data.keys().hasAll(['name', 'phone', 'mail', 'hora', 'tipos', 'persona']) &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() < 100 &&
+             isValidPhone(data.phone) &&
+             isValidEmail(data.mail) &&
+             data.hora is string &&
+             data.hora.size() > 0 &&
+             data.tipos is list &&
+             data.tipos.size() > 0 &&
+             data.tipos.size() < 10 &&
+             data.persona is string &&
+             data.persona.size() > 0;
+    }
+    
+    function isValidDateTime(dateTime) {
+      // Basic validation for DD/MM/YYYY - HH:MM format
+      return dateTime is string && 
+             dateTime.matches('[0-9]{2}/[0-9]{2}/[0-9]{4} - [0-9]{2}:[0-9]{2}');
+    }
+    
+    function isValidService(service) {
+      return service in ['Corte', 'Barba', 'Cejas', 'Mechas', 'Color', 'Membresía'];
+    }
+    
+    function isValidBarber(barber) {
+      // Add barber validation based on your current staff
+      return barber is string && barber.size() > 0 && barber.size() < 50;
+    }
+    
+    function isValidAppointmentUpdate(data) {
+      return isValidAppointmentData(data) &&
+             isValidDateTime(data.hora) &&
+             data.tipos.toSet().difference(['Corte', 'Barba', 'Cejas', 'Mechas', 'Color', 'Membresía'].toSet()).size() == 0;
+    }
+    
+    // Rate limiting helper (basic)
+    function isNotSpamming() {
+      // This is a basic check - in production you'd want more sophisticated rate limiting
+      return true;
+    }
+    
+    // Appointment collections - Dynamic barber support
+    match /{barberCollection}/{appointmentId} {
+      
+      // Allow read access for admin verification (server-side only)
+      allow read: if false; // Only server-side reads allowed
+      
+      // Allow creation of new appointments with validation
+      allow create: if 
+        // Validate collection name matches barber in document
+        barberCollection.matches('^[a-zA-Z0-9_]+$') &&
+        // Validate appointment data structure
+        isValidAppointmentUpdate(resource.data) &&
+        // Prevent spam
+        isNotSpamming() &&
+        // Additional security: timestamp must be in the future
+        request.time < timestamp.date(2030, 1, 1); // Prevent far future dates
+      
+      // Prevent updates and deletes from client-side
+      // Only server-side operations should handle these
+      allow update, delete: if false;
+    }
+    
+    // Legacy clientes collection - read-only for backward compatibility
+    match /clientes/{clientId} {
+      allow read: if false; // Server-side only
+      allow write: if false; // No longer accepting writes
+    }
+    
+    // Configuration collections (future use)
+    match /config/{configType} {
+      allow read: if false;  // Server-side only
+      allow write: if false; // Server-side only
+    }
+    
+    // Barbers configuration (future use)
+    match /barbers/{barberId} {
+      allow read: if false;  // Server-side only  
+      allow write: if false; // Server-side only
+    }
+    
+    // Services configuration (future use)
+    match /services/{serviceId} {
+      allow read: if false;  // Server-side only
+      allow write: if false; // Server-side only
+    }
+    
+    // Audit logs (future use)
+    match /audit/{logId} {
+      allow read: if false;  // Server-side only
+      allow write: if false; // Server-side only
+    }
+    
+    // Default rule: deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

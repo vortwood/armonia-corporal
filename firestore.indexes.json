@@ -1,0 +1,165 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "gonzalo",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "hora",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_franco_furtado",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        {
+          "fieldPath": "hora",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_hazael_cubrelo",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "hora", 
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "gonzalo",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "persona",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_franco_furtado",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "persona",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_hazael_cubrelo", 
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "persona",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "gonzalo",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mail",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_franco_furtado",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mail",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_hazael_cubrelo",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        {
+          "fieldPath": "mail",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hora",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "gonzalo",
+      "fieldPath": "hora",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING", 
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_franco_furtado",
+      "fieldPath": "hora",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "peluquero_hazael_cubrelo",
+      "fieldPath": "hora",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    }
+  ]
+}
