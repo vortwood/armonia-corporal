@@ -224,7 +224,7 @@ export default function HairdressersCreateModal({
       
     } catch (error) {
       console.error("Error completo creando profesional:", error);
-      alert(`Error al crear el profesional: ${error.message}`);
+      alert(`Error al crear el profesional: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setFormLoading(false);
     }

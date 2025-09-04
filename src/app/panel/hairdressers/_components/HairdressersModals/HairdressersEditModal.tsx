@@ -32,33 +32,33 @@ interface FormData {
 interface HairdressersEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editingHairdresser: Professional | null;
+  editingProfessional: Professional | null;
   formData: FormData;
   setFormData: (data: FormData | ((prev: FormData) => FormData)) => void;
   formLoading: boolean;
   setFormLoading: (loading: boolean) => void;
   services: Service[];
   resetForm: () => void;
-  setHairdressers: (updater: (prev: Hairdresser[]) => Hairdresser[]) => void;
-  setEditingHairdresser: (hairdresser: Hairdresser | null) => void;
+  setProfessionals: (updater: (prev: Professional[]) => Professional[]) => void;
+  setEditingProfessional: (professional: Professional | null) => void;
 }
 
 export default function HairdressersEditModal({
   open,
   onOpenChange,
-  editingHairdresser,
+  editingProfessional,
   formData,
   setFormData,
   formLoading,
   setFormLoading,
   services,
   resetForm,
-  setHairdressers,
-  setEditingHairdresser,
+  setProfessionals,
+  setEditingProfessional,
 }: HairdressersEditModalProps) {
   const handleUpdateHairdresser = async () => {
     if (
-      !editingHairdresser ||
+      !editingProfessional ||
       !formData.name.trim() ||
       !formData.email.trim()
     ) {
@@ -105,18 +105,18 @@ export default function HairdressersEditModal({
       };
 
       await updateDoc(
-        doc(db, "hairdressers", editingHairdresser.id),
+        doc(db, "professionals", editingProfessional.id),
         updatedData,
       );
 
-      setHairdressers((prev) =>
+      setProfessionals((prev) =>
         prev.map((h) =>
-          h.id === editingHairdresser.id ? { ...h, ...updatedData } : h,
+          h.id === editingProfessional.id ? { ...h, ...updatedData } : h,
         ),
       );
 
       onOpenChange(false);
-      setEditingHairdresser(null);
+      setEditingProfessional(null);
       resetForm();
     } catch (error) {
       console.error("Error updating hairdresser:", error);
@@ -127,7 +127,7 @@ export default function HairdressersEditModal({
   };
 
   const handleDeleteHairdresser = async () => {
-    if (!editingHairdresser) return;
+    if (!editingProfessional) return;
 
     if (
       !confirm(
@@ -140,12 +140,12 @@ export default function HairdressersEditModal({
     setFormLoading(true);
 
     try {
-      await deleteDoc(doc(db, "hairdressers", editingHairdresser.id));
-      setHairdressers((prev) =>
-        prev.filter((h) => h.id !== editingHairdresser.id),
+      await deleteDoc(doc(db, "hairdressers", editingProfessional.id));
+      setProfessionals((prev) =>
+        prev.filter((h) => h.id !== editingProfessional.id),
       );
       onOpenChange(false);
-      setEditingHairdresser(null);
+      setEditingProfessional(null);
       resetForm();
     } catch (error) {
       console.error("Error deleting hairdresser:", error);
@@ -253,7 +253,7 @@ export default function HairdressersEditModal({
       <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto bg-white">
         <DialogHeader className="text-left">
           <DialogTitle>Editar Profesional</DialogTitle>
-          <DialogDescription>{editingHairdresser?.name}</DialogDescription>
+          <DialogDescription>{editingProfessional?.name}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">

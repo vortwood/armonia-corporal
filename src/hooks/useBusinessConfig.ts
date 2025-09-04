@@ -69,7 +69,7 @@ export const useBusinessConfig = () => {
     
     getStructuredData: () => ({
       "@context": "https://schema.org",
-      "@type": config.businessType === 'barberia' ? "HairSalon" : "BeautySalon",
+      "@type": config.businessType === 'clinica_estetica' ? "MedicalClinic" : config.businessType === 'spa' ? "HealthAndBeautyBusiness" : "BeautySalon",
       "name": config.name,
       "description": config.description,
       "url": typeof window !== 'undefined' ? window.location.origin : '',

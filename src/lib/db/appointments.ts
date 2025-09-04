@@ -22,7 +22,7 @@ export interface Appointment {
   mail: string;
   hora: string; // Format: "DD/MM/YYYY - HH:MM"
   tipos: string[];
-  hairdresserId: string; // Modern field (replaces 'persona')
+  professionalId: string; // Modern field (replaces 'persona')
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -33,15 +33,15 @@ export interface AppointmentInput {
   mail: string;
   hora: string;
   tipos: string[];
-  hairdresserId: string;
+  professionalId: string;
 }
 
 // Cache keys for different query types
 const CACHE_KEYS = {
-  barberAppointments: (barberId: string) => `appointments:barber:${barberId}`,
+  professionalAppointments: (professionalId: string) => `appointments:professional:${professionalId}`,
   dateAppointments: (date: string) => `appointments:date:${date}`,
   allAppointments: "appointments:all",
-  barberStats: (barberId: string) => `stats:barber:${barberId}`,
+  professionalStats: (professionalId: string) => `stats:professional:${professionalId}`,
   monthlyStats: (month: string) => `stats:monthly:${month}`,
 };
 
@@ -66,20 +66,20 @@ function documentToAppointment(doc: DocumentSnapshot): Appointment {
     mail: data.mail,
     hora: data.hora,
     tipos: data.tipos || [],
-    hairdresserId: data.hairdresserId || data.persona, // Handle legacy 'persona' field
+    professionalId: data.professionalId,
     createdAt: data.createdAt?.toDate(),
     updatedAt: data.updatedAt?.toDate(),
   };
 }
 
 /**
- * Get appointments for a specific barber with caching
+ * Get appointments for a specific professional with caching
  */
-export async function getBarberAppointments(
-  barberId: string,
+export async function getProfessionalAppointments(
+  professionalId: string,
   useCache: boolean = true,
 ): Promise<Appointment[]> {
-  const cacheKey = CACHE_KEYS.barberAppointments(barberId);
+  const cacheKey = CACHE_KEYS.professionalAppointments(professionalId);
 
   // Check cache first
   if (useCache) {
@@ -90,10 +90,10 @@ export async function getBarberAppointments(
   try {
     const appointmentsRef = collection(db, "appointments");
 
-    // Query for specific barber with optimized ordering
+    // Query for specific professional with optimized ordering
     const q = query(
       appointmentsRef,
-      where("hairdresserId", "==", barberId),
+      where("professionalId", "==", professionalId),
       orderBy("hora", "desc"),
     );
 
@@ -111,13 +111,13 @@ export async function getBarberAppointments(
 
     return appointments;
   } catch (error) {
-    console.error(`Error fetching appointments for barber ${barberId}:`, error);
-    throw new Error("Failed to fetch barber appointments");
+    console.error(`Error fetching appointments for professional ${professionalId}:`, error);
+    throw new Error("Failed to fetch professional appointments");
   }
 }
 
 /**
- * Get appointments for a specific date across all barbers
+ * Get appointments for a specific date across all professionals
  */
 export async function getAppointmentsByDate(
   date: string,
@@ -215,7 +215,7 @@ export async function createAppointment(
   try {
     // Check for conflicts first
     const conflictCheck = await checkAppointmentConflict(
-      appointment.hairdresserId,
+      appointment.professionalId,
       appointment.hora,
     );
 
@@ -239,7 +239,7 @@ export async function createAppointment(
 
     // Invalidate related caches
     await invalidateAppointmentCaches(
-      appointment.hairdresserId,
+      appointment.professionalId,
       appointment.hora,
     );
 
@@ -284,7 +284,7 @@ export async function deleteAppointment(
  * Check for appointment conflicts
  */
 export async function checkAppointmentConflict(
-  barberId: string,
+  professionalId: string,
   hora: string,
 ): Promise<{ hasConflict: boolean; conflictId?: string }> {
   try {
@@ -292,7 +292,7 @@ export async function checkAppointmentConflict(
 
     const q = query(
       appointmentsRef,
-      where("hairdresserId", "==", barberId),
+      where("professionalId", "==", professionalId),
       where("hora", "==", hora),
     );
 
@@ -314,21 +314,21 @@ export async function checkAppointmentConflict(
 }
 
 /**
- * Get monthly statistics for barbers
+ * Get monthly statistics for professionals
  */
 export async function getMonthlyStats(
   month: string,
   useCache: boolean = true,
-): Promise<{ [barberId: string]: number }> {
+): Promise<{ [professionalId: string]: number }> {
   const cacheKey = CACHE_KEYS.monthlyStats(month);
 
   if (useCache) {
-    const cached = await cache.get<{ [barberId: string]: number }>(cacheKey);
+    const cached = await cache.get<{ [professionalId: string]: number }>(cacheKey);
     if (cached) return cached;
   }
 
   try {
-    const stats: { [barberId: string]: number } = {};
+    const stats: { [professionalId: string]: number } = {};
 
     // Get all appointments from unified collection
     const appointmentsRef = collection(db, "appointments");
@@ -336,13 +336,13 @@ export async function getMonthlyStats(
 
     querySnapshot.forEach((doc) => {
       const appointment = doc.data();
-      const barberId = appointment.hairdresserId || appointment.persona; // Handle legacy
+      const professionalId = appointment.professionalId;
 
-      if (appointment.hora && barberId) {
+      if (appointment.hora && professionalId) {
         // Filter by month (assuming hora format: "DD/MM/YYYY - HH:MM")
         const appointmentMonth = appointment.hora.substring(3, 10); // Extract "MM/YYYY"
         if (appointmentMonth === month) {
-          stats[barberId] = (stats[barberId] || 0) + 1;
+          stats[professionalId] = (stats[professionalId] || 0) + 1;
         }
       }
     });
@@ -363,14 +363,14 @@ export async function getMonthlyStats(
  * Invalidate appointment-related caches
  */
 async function invalidateAppointmentCaches(
-  barberId?: string,
+  professionalId?: string,
   hora?: string,
 ): Promise<void> {
   try {
     const keysToInvalidate = [CACHE_KEYS.allAppointments];
 
-    if (barberId) {
-      keysToInvalidate.push(CACHE_KEYS.barberAppointments(barberId));
+    if (professionalId) {
+      keysToInvalidate.push(CACHE_KEYS.professionalAppointments(professionalId));
     }
 
     if (hora) {

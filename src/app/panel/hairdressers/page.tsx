@@ -87,7 +87,7 @@ export default function ProfessionalsPage() {
       });
 
       setProfessionals((prev) =>
-        prev.map((h) => (h.id === id ? { ...h, isActive: !currentStatus } : h)),
+        prev.map((p) => (p.id === id ? { ...p, isActive: !currentStatus } : p)),
       );
     } catch (error) {
       console.error("Error updating professional status:", error);
@@ -210,10 +210,10 @@ export default function ProfessionalsPage() {
           <HairdressersNoResults setShowCreateDialog={setShowCreateDialog} />
         ) : (
           <HairdressersResponsiveContainer
-            hairdressers={professionals}
+            professionals={professionals}
             onToggleActive={toggleActive}
-            onEditHairdresser={handleEditProfessional}
-            onDeleteHairdresser={handleDeleteProfessional}
+            onEditProfessional={handleEditProfessional}
+            onDeleteProfessional={handleDeleteProfessional}
           />
         )}
       </section>

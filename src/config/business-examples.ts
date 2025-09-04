@@ -13,7 +13,7 @@ export const ELEGANT_SALON_CONFIG: BusinessConfig = {
   description:
     "En Bella Vista creemos que la belleza es un arte. Cada corte, cada color, es una expresión única de tu personalidad. Nuestro equipo de estilistas expertos trabaja con dedicación para realzar tu belleza natural.",
   established: "2018",
-  businessType: "peluqueria",
+  businessType: "spa",
 
   contact: {
     phone: "+34 911 234 567",
@@ -118,7 +118,7 @@ export const MODERN_BARBERSHOP_CONFIG: BusinessConfig = {
   description:
     "Experiencia premium en corte masculino. Donde la precisión se encuentra con el estilo contemporáneo.",
   established: "2020",
-  businessType: "barberia",
+  businessType: "centro_bienestar",
 
   contact: {
     phone: "+598 099 123 456",
@@ -211,7 +211,7 @@ export const VINTAGE_BARBERSHOP_CONFIG: BusinessConfig = {
   description:
     "Donde la tradición barbera se mantiene viva. Técnicas artesanales transmitidas de generación en generación.",
   established: "1985",
-  businessType: "barberia",
+  businessType: "centro_bienestar",
 
   contact: {
     phone: "+598 099 654 321",
@@ -308,7 +308,7 @@ export const GLAMOUR_SALON_CONFIG: BusinessConfig = {
   description:
     "Tu destino para transformaciones exclusivas. Servicios premium que realzan tu belleza natural con los más altos estándares de calidad.",
   established: "2019",
-  businessType: "peluqueria",
+  businessType: "spa",
 
   contact: {
     phone: "+34 911 987 654",

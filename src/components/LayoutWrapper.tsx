@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import Footer from "@/components/Landing/Footer";
 
 import { AppSidebar } from "./AppSidebar";
 import { MobileNav } from "./MobileNav";
@@ -17,12 +16,7 @@ export default function LayoutWrapper({
   const isPanelRoute = pathname.startsWith("/panel");
 
   if (!isPanelRoute) {
-    return (
-      <>
-        {children}
-        <Footer />
-      </>
-    );
+    return <>{children}</>;
   }
 
   return (

@@ -16,15 +16,15 @@ import {
 interface HairdressersCardProps {
   professionals: Professional[];
   onToggleActive: (id: string, currentStatus: boolean) => Promise<void>;
-  onEditHairdresser: (hairdresser: Professional) => void;
-  onDeleteHairdresser: (hairdresser: Professional) => void;
+  onEditProfessional: (professional: Professional) => void;
+  onDeleteProfessional: (professional: Professional) => void;
 }
 
 export default function HairdressersCard({
   professionals,
   onToggleActive,
-  onEditHairdresser,
-  onDeleteHairdresser,
+  onEditProfessional,
+  onDeleteProfessional,
 }: HairdressersCardProps) {
   const getInitials = (name: string) => {
     return name
@@ -93,13 +93,13 @@ export default function HairdressersCard({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white" align="end">
                     <DropdownMenuItem
-                      onClick={() => onEditHairdresser(professional)}
+                      onClick={() => onEditProfessional(professional)}
                     >
                       Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => onDeleteHairdresser(professional)}
+                      onClick={() => onDeleteProfessional(professional)}
                     >
                       Eliminar
                     </DropdownMenuItem>

@@ -8,37 +8,37 @@ import HairdressersCard from "./HairdressersCard";
 import HairdressersTable from "./HairdressersTable";
 
 interface HairdressersResponsiveContainerProps {
-  hairdressers: Professional[];
+  professionals: Professional[];
   onToggleActive: (id: string, currentStatus: boolean) => Promise<void>;
-  onEditHairdresser: (hairdresser: Professional) => void;
-  onDeleteHairdresser: (hairdresser: Professional) => void;
+  onEditProfessional: (professional: Professional) => void;
+  onDeleteProfessional: (professional: Professional) => void;
 }
 
 export default function HairdressersResponsiveContainer({
-  hairdressers,
+  professionals,
   onToggleActive,
-  onEditHairdresser,
-  onDeleteHairdresser,
+  onEditProfessional,
+  onDeleteProfessional,
 }: HairdressersResponsiveContainerProps) {
   const isMobile = useIsMobile();
 
   if (isMobile) {
     return (
       <HairdressersCard
-        professionals={hairdressers}
+        professionals={professionals}
         onToggleActive={onToggleActive}
-        onEditHairdresser={onEditHairdresser}
-        onDeleteHairdresser={onDeleteHairdresser}
+        onEditProfessional={onEditProfessional}
+        onDeleteProfessional={onDeleteProfessional}
       />
     );
   }
 
   return (
     <HairdressersTable
-      professionals={hairdressers}
+      professionals={professionals}
       onToggleActive={onToggleActive}
-      onEditHairdresser={onEditHairdresser}
-      onDeleteHairdresser={onDeleteHairdresser}
+      onEditProfessional={onEditProfessional}
+      onDeleteProfessional={onDeleteProfessional}
     />
   );
 }

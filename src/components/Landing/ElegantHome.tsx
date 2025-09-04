@@ -1,7 +1,8 @@
 "use client";
 
-import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { Star } from "lucide-react";
 
 import { useBusinessConfig } from "@/hooks/useBusinessConfig";
 import { Button } from "@/components/ui/button";
@@ -96,10 +97,11 @@ export default function ElegantHome() {
                 Experiencia y dedicación profesional
               </h3>
               <p className="text-muted-foreground leading-relaxed font-light">
-                Con más de 5 años de experiencia como esteticista y cosmiátra, 
-                me especializo en tratamientos personalizados que realzan tu belleza natural. 
-                Utilizo productos de primera calidad y las técnicas más avanzadas en 
-                aparatología estética para cuidar tu piel y bienestar.
+                Con más de 5 años de experiencia como esteticista y cosmiátra,
+                me especializo en tratamientos personalizados que realzan tu
+                belleza natural. Utilizo productos de primera calidad y las
+                técnicas más avanzadas en aparatología estética para cuidar tu
+                piel y bienestar.
               </p>
               <Button
                 onClick={handleBookingClick}

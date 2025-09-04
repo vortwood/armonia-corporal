@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import db from "@/util/firestore";
-import type { Hairdresser, Service } from "@/util/types";
+import type { Professional, Service } from "@/util/types";
 import { collection, getDocs } from "firebase/firestore";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,12 +18,12 @@ interface AppointmentData {
   mail: string;
   hora: string;
   tipos: string[];
-  persona: string;
+  professionalId: string;
   stylist: string;
   collection: string;
 }
 
-interface HairdresserMetrics {
+interface ProfessionalMetrics {
   id: string;
   name: string;
   totalAppointments: number;
@@ -33,23 +33,23 @@ interface HairdresserMetrics {
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [hairdressers, setHairdressers] = useState<Hairdresser[]>([]);
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [appointments, setAppointments] = useState<AppointmentData[]>([]);
-  const [metrics, setMetrics] = useState<HairdresserMetrics[]>([]);
+  const [metrics, setMetrics] = useState<ProfessionalMetrics[]>([]);
 
   // Cargar todos los datos
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Cargar Profesionales
-        const hairdressersSnapshot = await getDocs(
-          collection(db, "hairdressers"),
+        const professionalsSnapshot = await getDocs(
+          collection(db, "professionals"),
         );
-        const hairdressersData = hairdressersSnapshot.docs.map((doc) => ({
+        const professionalsData = professionalsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Hairdresser[];
+        })) as Professional[];
 
         // Cargar servicios
         const servicesSnapshot = await getDocs(collection(db, "services"));
@@ -67,14 +67,14 @@ export default function DashboardPage() {
           );
           allAppointments = appointmentsSnapshot.docs.map((doc) => {
             const data = doc.data();
-            // Find hairdresser name by ID
-            const hairdresser = hairdressersData.find(
-              (h) => h.id === data.hairdresserId,
+            // Find professional name by ID
+            const professional = professionalsData.find(
+              (p) => p.id === data.professionalId,
             );
             return {
               id: doc.id,
               ...data,
-              stylist: hairdresser?.name || data.persona || "Unknown",
+              stylist: professional?.name || "Unknown",
               collection: "appointments",
             };
           }) as AppointmentData[];
@@ -82,12 +82,12 @@ export default function DashboardPage() {
           console.error("Error loading appointments:", error);
         }
 
-        setHairdressers(hairdressersData);
+        setProfessionals(professionalsData);
         setServices(servicesData);
         setAppointments(allAppointments);
 
         // Calcular métricas
-        calculateMetrics(allAppointments, hairdressersData);
+        calculateMetrics(allAppointments, professionalsData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -101,31 +101,31 @@ export default function DashboardPage() {
   // Calcular métricas por profesional
   const calculateMetrics = (
     appointmentsData: AppointmentData[],
-    hairdressersData: Hairdresser[],
+    professionalsData: Professional[],
   ) => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    const stylistMetrics: Record<string, HairdresserMetrics> = {};
+    const stylistMetrics: Record<string, ProfessionalMetrics> = {};
 
     // Inicializar métricas para Profesionales registrados
-    hairdressersData.forEach((h) => {
-      stylistMetrics[h.name] = {
-        id: h.id,
-        name: h.name,
+    professionalsData.forEach((p) => {
+      stylistMetrics[p.name] = {
+        id: p.id,
+        name: p.name,
         totalAppointments: 0,
         thisMonthAppointments: 0,
         popularServices: [],
       };
     });
 
-    // Initialize metrics for all active hairdressers
-    hairdressersData.forEach((h) => {
-      if (!stylistMetrics[h.name]) {
-        stylistMetrics[h.name] = {
-          id: h.id,
-          name: h.name,
+    // Initialize metrics for all active professionals
+    professionalsData.forEach((p) => {
+      if (!stylistMetrics[p.name]) {
+        stylistMetrics[p.name] = {
+          id: p.id,
+          name: p.name,
           totalAppointments: 0,
           thisMonthAppointments: 0,
           popularServices: [],
@@ -136,7 +136,7 @@ export default function DashboardPage() {
     const serviceCount: Record<string, Record<string, number>> = {};
 
     appointmentsData.forEach((appointment) => {
-      const stylistName = appointment.stylist || appointment.persona;
+      const stylistName = appointment.stylist;
       if (!stylistName) return;
 
       if (!stylistMetrics[stylistName]) {
@@ -214,7 +214,7 @@ export default function DashboardPage() {
     }
   }).length;
 
-  const activeHairdressers = hairdressers.filter((h) => h.isActive).length;
+  const activeProfessionals = professionals.filter((p) => p.isActive).length;
   const activeServices = services.filter((s) => s.isActive).length;
 
   if (loading) {
@@ -298,7 +298,7 @@ export default function DashboardPage() {
             <div>
               <p className="text-sm text-gray-600">Profesionales Activos</p>
               <p className="text-3xl font-bold text-purple-600">
-                {activeHairdressers}
+                {activeProfessionals}
               </p>
             </div>
             <div className="rounded-full bg-purple-100 p-3">

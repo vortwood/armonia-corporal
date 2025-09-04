@@ -18,7 +18,7 @@ export function About() {
             className={`${inter.className} max-w-2xl text-white/80 lg:text-lg space-y-4`}
           >
             <p className="sr-only">
-              <strong>{config.name}</strong> es {config.businessType === 'barberia' ? 'la barbería' : config.businessType === 'peluqueria' ? 'la peluquería' : 'la clínica estética'} de confianza en {config.location.city}, {config.location.country}. 
+              <strong>{config.name}</strong> es {config.businessType === 'spa' ? 'el spa' : config.businessType === 'centro_bienestar' ? 'el centro de bienestar' : 'la clínica estética'} de confianza en {config.location.city}, {config.location.country}. 
               Ubicados en <strong>{config.location.address}</strong>, 
               somos especialistas en <strong>{config.services.map(s => s.name.toLowerCase()).join(', ')}</strong>.
             </p>
@@ -43,14 +43,14 @@ export function About() {
         <figure className="w-full">
           <img
             src="/about-interior.jpg"
-            alt={`Interior de ${config.name} - ${config.businessType === 'barberia' ? 'Barbería' : config.businessType === 'peluqueria' ? 'Peluquería' : 'Clínica estética'} profesional en ${config.location.city}`}
+            alt={`Interior de ${config.name} - ${config.businessType === 'spa' ? 'Spa' : config.businessType === 'centro_bienestar' ? 'Centro de bienestar' : 'Clínica estética'} profesional en ${config.location.city}`}
             className="h-[300px] w-full object-cover"
             loading="lazy"
             width="600"
             height="300"
           />
           <figcaption className="sr-only">
-            Interior moderno de {config.name}, {config.businessType === 'barberia' ? 'barbería' : config.businessType === 'peluqueria' ? 'peluquería' : 'clínica estética'} profesional ubicada en {config.location.city}
+            Interior moderno de {config.name}, {config.businessType === 'spa' ? 'spa' : config.businessType === 'centro_bienestar' ? 'centro de bienestar' : 'clínica estética'} profesional ubicada en {config.location.city}
           </figcaption>
         </figure>
       </article>

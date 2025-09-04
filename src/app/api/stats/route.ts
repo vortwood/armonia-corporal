@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month') || undefined;
-    const barberId = searchParams.get('barberId') || undefined;
+    const professionalId = searchParams.get('professionalId') || undefined;
     const year = searchParams.get('year') ? parseInt(searchParams.get('year')!) : undefined;
 
     // Basic validation for month format (MM/YYYY)
@@ -69,12 +69,12 @@ export async function GET(request: NextRequest) {
 
     // Calculate additional metrics
     const totalAppointments = Object.values(monthlyStats).reduce((sum, count) => sum + count, 0);
-    const avgPerBarber = totalAppointments > 0 ? totalAppointments / Object.keys(monthlyStats).length : 0;
+    const avgPerProfessional = totalAppointments > 0 ? totalAppointments / Object.keys(monthlyStats).length : 0;
 
-    // Format response with dynamic barber data
+    // Format response with dynamic professional data
     const formattedStats = Object.entries(monthlyStats).map(([id, count]) => ({
-      barberId: id,
-      barberName: id, // Use ID as name (frontend can resolve to display name if needed)
+      professionalId: id,
+      professionalName: id, // Use ID as name (frontend can resolve to display name if needed)
       appointmentCount: count,
       percentage: totalAppointments > 0 ? Math.round((count / totalAppointments) * 100) : 0
     }));
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       historicalData.push({
         month: historyMonth,
         total: historyTotal,
-        barbers: historyStats
+        professionals: historyStats
       });
     }
 
@@ -101,11 +101,11 @@ export async function GET(request: NextRequest) {
       data: {
         currentMonth,
         totalAppointments,
-        avgPerBarber: Math.round(avgPerBarber * 100) / 100,
-        barberStats: formattedStats,
+        avgPerProfessional: Math.round(avgPerProfessional * 100) / 100,
+        professionalStats: formattedStats,
         rawStats: monthlyStats,
         historical: historicalData,
-        filters: { month, barberId, year }
+        filters: { month, professionalId, year }
       }
     });
 

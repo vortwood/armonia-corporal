@@ -13,7 +13,11 @@ const Footer = () => {
         <div className="mb-8 text-center">
           <h3 className="mb-2 text-2xl font-bold">
             Explora Nuestros Estilos de{" "}
-            {config.businessType === "peluqueria" ? "Peluquería" : "Barbería"}
+            {config.businessType === "spa"
+              ? "Spa"
+              : config.businessType === "centro_bienestar"
+                ? "Centro de Bienestar"
+                : "Clínica Estética"}
           </h3>
           <p className="opacity-80">
             Descubre diferentes experiencias en {config.name}
@@ -24,6 +28,18 @@ const Footer = () => {
           <p>
             &copy; {new Date().getFullYear()} {config.name}. Todos los derechos
             reservados.
+          </p>
+          <br />
+          <p>
+            Diseñado y desarrollado por{" "}
+            <a
+              href="https://www.vortwood.com"
+              referrerPolicy="no-referrer"
+              about="_blank"
+              className="font-semibold underline"
+            >
+              Vortwood Software
+            </a>
           </p>
         </div>
       </div>
