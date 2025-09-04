@@ -25,17 +25,21 @@ export default function ElegantHome() {
       {/* Hero - Minimal con imagen de fondo */}
       <section className="relative h-screen">
         <img
-          src={"/nails2.jpg"}
-          alt="Salon elegante"
+          src={"/peluqueria-hero.webp"}
+          alt="hero image de la clinica estética armonia corporal by alejandra duarte"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30"></div>
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-          <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
-            <span className="text-4xl font-bold text-white">
-              {config.shortName}
-            </span>
+          <div className="mb-8 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
+            <img
+              src="/logo-ac.png"
+              alt=""
+              height={24}
+              width={24}
+              className="h-16 w-16 md:h-32 md:w-32"
+            />
           </div>
           <h1 className="mb-4 text-5xl font-light tracking-wide text-white md:text-7xl lg:text-8xl">
             {config.name}
@@ -112,7 +116,7 @@ export default function ElegantHome() {
             </div>
             <div>
               <img
-                src={"/peluqueria-work.jpg"}
+                src={"/peluqueria-work.webp"}
                 alt="Trabajo elegante"
                 className="h-[500px] w-full object-cover"
               />
