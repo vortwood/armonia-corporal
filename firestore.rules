@@ -13,7 +13,7 @@ service cloud.firestore {
     }
     
     function isValidAppointmentData(data) {
-      return data.keys().hasAll(['name', 'phone', 'mail', 'hora', 'tipos', 'persona']) &&
+      return data.keys().hasAll(['name', 'phone', 'mail', 'hora', 'tipos', 'professionalId']) &&
              data.name is string &&
              data.name.size() > 0 &&
              data.name.size() < 100 &&
@@ -24,8 +24,8 @@ service cloud.firestore {
              data.tipos is list &&
              data.tipos.size() > 0 &&
              data.tipos.size() < 10 &&
-             data.persona is string &&
-             data.persona.size() > 0;
+             data.professionalId is string &&
+             data.professionalId.size() > 0;
     }
     
     function isValidDateTime(dateTime) {
@@ -35,18 +35,18 @@ service cloud.firestore {
     }
     
     function isValidService(service) {
-      return service in ['Corte', 'Barba', 'Cejas', 'Mechas', 'Color', 'Membresía'];
+      return service in ["Facial_Hidratante", "Peeling_Quimico", "Masaje_Relajante", "Masaje_Descontracturante", "Aparatologia", "Limpieza_Facial", "Tratamiento_Antiedad", "Masajes_Relajantes", "Tratamientos_Faciales", "Tratamientos_Corporales", "Depilacion", "Manicura_Pedicura"];
     }
     
-    function isValidBarber(barber) {
-      // Add barber validation based on your current staff
-      return barber is string && barber.size() > 0 && barber.size() < 50;
+    function isValidProfessional(professional) {
+      // Add professional validation based on your current staff
+      return professional is string && professional.size() > 0 && professional.size() < 50;
     }
     
     function isValidAppointmentUpdate(data) {
       return isValidAppointmentData(data) &&
              isValidDateTime(data.hora) &&
-             data.tipos.toSet().difference(['Corte', 'Barba', 'Cejas', 'Mechas', 'Color', 'Membresía'].toSet()).size() == 0;
+             data.tipos.toSet().difference(["Facial_Hidratante", "Peeling_Quimico", "Masaje_Relajante", "Masaje_Descontracturante", "Aparatologia", "Limpieza_Facial", "Tratamiento_Antiedad", "Masajes_Relajantes", "Tratamientos_Faciales", "Tratamientos_Corporales", "Depilacion", "Manicura_Pedicura"].toSet()).size() == 0;
     }
     
     // Rate limiting helper (basic)
@@ -55,16 +55,16 @@ service cloud.firestore {
       return true;
     }
     
-    // Appointment collections - Dynamic barber support
-    match /{barberCollection}/{appointmentId} {
+    // Appointment collections - Dynamic professional support
+    match /{professionalCollection}/{appointmentId} {
       
       // Allow read access for admin verification (server-side only)
       allow read: if false; // Only server-side reads allowed
       
       // Allow creation of new appointments with validation
       allow create: if 
-        // Validate collection name matches barber in document
-        barberCollection.matches('^[a-zA-Z0-9_]+$') &&
+        // Validate collection name matches professional in document
+        professionalCollection.matches('^[a-zA-Z0-9_]+$') &&
         // Validate appointment data structure
         isValidAppointmentUpdate(resource.data) &&
         // Prevent spam
@@ -89,16 +89,19 @@ service cloud.firestore {
       allow write: if false; // Server-side only
     }
     
-    // Barbers configuration (future use)
-    match /barbers/{barberId} {
-      allow read: if false;  // Server-side only  
-      allow write: if false; // Server-side only
+    // Professionals collection - Allow full access for admin panel
+    match /professionals/{professionalId} {
+      allow read, write: if true;  // Allow full access for admin panel
     }
     
-    // Services configuration (future use)
+    // Services configuration - Allow full access for admin panel  
     match /services/{serviceId} {
-      allow read: if false;  // Server-side only
-      allow write: if false; // Server-side only
+      allow read, write: if true;  // Allow full access for admin panel
+    }
+    
+    // Appointments collection - Allow full access for booking and admin
+    match /appointments/{appointmentId} {
+      allow read, write: if true;  // Allow full access for booking and admin
     }
     
     // Audit logs (future use)

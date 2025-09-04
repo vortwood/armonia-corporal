@@ -24,7 +24,7 @@ export function ServicesNoResults({
         No hay servicios registrados
       </h3>
       <p className="mt-2 text-gray-500">
-        Comienza agregando servicios que ofreces en tu barbería.
+        Comienza agregando servicios que ofreces.
       </p>
       <Button
         onClick={() => setShowCreateDialog(true)}

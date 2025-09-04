@@ -6,7 +6,7 @@ interface CustomerConfirmationProps {
   date: string;
   time: string;
   services: string[];
-  hairdresserName: string;
+  professionalName: string;
   phone: string;
   email: string;
 }
@@ -16,7 +16,7 @@ export function CustomerConfirmation({
   date,
   time,
   services,
-  hairdresserName,
+  professionalName,
 }: CustomerConfirmationProps) {
   const config = getBusinessConfig();
   return (
@@ -29,7 +29,7 @@ export function CustomerConfirmation({
       <body
         style={{
           fontFamily: "Arial, sans-serif",
-          backgroundColor: "#f7f7f7",
+          backgroundColor: "#FDF8F3",
           margin: 0,
           padding: 0,
           lineHeight: 1.6,
@@ -40,16 +40,16 @@ export function CustomerConfirmation({
             maxWidth: "600px",
             margin: "20px auto",
             backgroundColor: "#ffffff",
-            border: "1px solid #dddddd",
+            border: "1px solid #E8D5C4",
             borderRadius: "12px",
             overflow: "hidden",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 4px 6px rgba(212, 165, 116, 0.1)",
           }}
         >
           {/* Header with Logo */}
           <div
             style={{
-              background: "linear-gradient(135deg, #1f2937 0%, #374151 100%)",
+              background: "linear-gradient(135deg, #D4A574 0%, #8B5A3C 100%)",
               padding: "30px 20px",
               textAlign: "center",
               color: "#ffffff",
@@ -68,10 +68,10 @@ export function CustomerConfirmation({
                 justifyContent: "center",
                 fontSize: "28px",
                 fontWeight: "bold",
-                color: "#1f2937",
+                color: "#D4A574",
               }}
             >
-              BS
+              AD
             </div>
             <h1
               style={{
@@ -90,7 +90,7 @@ export function CustomerConfirmation({
                 opacity: 0.9,
               }}
             >
-              Tu estilo, nuestra pasión
+              Belleza y Bienestar Natural
             </p>
           </div>
 
@@ -106,7 +106,7 @@ export function CustomerConfirmation({
               <h2
                 style={{
                   fontSize: "24px",
-                  color: "#1f2937",
+                  color: "#3D2E1F",
                   margin: "0 0 10px 0",
                 }}
               >
@@ -126,8 +126,8 @@ export function CustomerConfirmation({
             {/* Appointment Details Card */}
             <div
               style={{
-                backgroundColor: "#f9fafb",
-                border: "2px solid #e5e7eb",
+                backgroundColor: "#FDF8F3",
+                border: "2px solid #E8D5C4",
                 borderRadius: "12px",
                 padding: "25px",
                 marginBottom: "25px",
@@ -136,13 +136,13 @@ export function CustomerConfirmation({
               <h3
                 style={{
                   fontSize: "18px",
-                  color: "#1f2937",
+                  color: "#3D2E1F",
                   margin: "0 0 20px 0",
                   textAlign: "center",
                   fontWeight: "bold",
                 }}
               >
-                📅 Detalles de tu Cita
+                💆‍♀️ Detalles de tu Cita
               </h3>
 
               <div style={{ display: "grid", gap: "15px" }}>
@@ -173,9 +173,9 @@ export function CustomerConfirmation({
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "10px" }}
                 >
-                  <span style={{ fontSize: "18px" }}>✂️</span>
+                  <span style={{ fontSize: "18px" }}>💆‍♀️</span>
                   <div>
-                    <strong style={{ color: "#374151" }}>Servicios:</strong>
+                    <strong style={{ color: "#374151" }}>Tratamientos:</strong>
                     <span style={{ marginLeft: "8px", color: "#6b7280" }}>
                       {services.join(", ")}
                     </span>
@@ -185,11 +185,11 @@ export function CustomerConfirmation({
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "10px" }}
                 >
-                  <span style={{ fontSize: "18px" }}>👨‍💼</span>
+                  <span style={{ fontSize: "18px" }}>👩‍⚕️</span>
                   <div>
                     <strong style={{ color: "#374151" }}>Profesional:</strong>
                     <span style={{ marginLeft: "8px", color: "#6b7280" }}>
-                      {hairdresserName}
+                      {professionalName}
                     </span>
                   </div>
                 </div>
@@ -233,7 +233,7 @@ export function CustomerConfirmation({
               <div
                 style={{
                   display: "inline-block",
-                  backgroundColor: "#1f2937",
+                  backgroundColor: "#D4A574",
                   color: "#ffffff",
                   padding: "12px 24px",
                   borderRadius: "25px",
@@ -242,7 +242,7 @@ export function CustomerConfirmation({
                   fontWeight: "bold",
                 }}
               >
-                📞 (+598) 099 250 338
+                📞 +598 99 425 621
               </div>
               <p
                 style={{
@@ -251,7 +251,7 @@ export function CustomerConfirmation({
                   margin: "15px 0 0 0",
                 }}
               >
-                Atención: Lunes a Sábado 9:00 - 20:00
+                Atención: Lunes a Viernes 9:00 - 18:00, Sábados 9:00 - 15:00
               </p>
             </div>
 
@@ -267,7 +267,7 @@ export function CustomerConfirmation({
               <p
                 style={{
                   fontSize: "18px",
-                  color: "#1f2937",
+                  color: "#3D2E1F",
                   margin: "0 0 10px 0",
                   fontWeight: "bold",
                 }}

@@ -16,7 +16,7 @@ interface EmailData {
   date: string;
   time: string;
   services: string[];
-  hairdresserName: string;
+  professionalName: string;
 }
 
 export async function sendAppointmentEmails(data: EmailData) {
@@ -30,7 +30,7 @@ export async function sendAppointmentEmails(data: EmailData) {
       date,
       time,
       services,
-      hairdresserName,
+      professionalName,
     } = data;
 
     // Convert service IDs to names
@@ -55,7 +55,7 @@ export async function sendAppointmentEmails(data: EmailData) {
         date,
         time,
         services: formattedServices,
-        hairdresserName,
+        professionalName,
       }),
     });
 
@@ -78,7 +78,7 @@ export async function sendAppointmentEmails(data: EmailData) {
         date,
         time,
         services: formattedServices,
-        hairdresserName,
+        professionalName,
       }),
     });
 
@@ -135,7 +135,7 @@ export async function sendEmail({ to }: LegacyEmailParams) {
     date: date || recipient.hora,
     time: time || "",
     services: recipient.tipos,
-    hairdresserName: recipient.persona,
+    professionalName: recipient.persona,
   });
 }
 
@@ -145,13 +145,13 @@ function generateCustomerEmailHTML({
   date,
   time,
   services,
-  hairdresserName,
+  professionalName,
 }: {
   customerName: string;
   date: string;
   time: string;
   services: string[];
-  hairdresserName: string;
+  professionalName: string;
 }) {
   return `
     <!DOCTYPE html>
@@ -219,7 +219,7 @@ function generateCustomerEmailHTML({
                 <div style="display: flex; align-items: center; gap: 10px;">
                   <div style="font-size: 18px">
                     <strong style="color: #374151;">Profesional:</strong>
-                    <span style="margin-left: 8px; color: #6b7280;">${hairdresserName}</span>
+                    <span style="margin-left: 8px; color: #6b7280;">${professionalName}</span>
                   </div>
                 </div>
               </div>
@@ -271,7 +271,7 @@ function generateAdminEmailHTML({
   date,
   time,
   services,
-  hairdresserName,
+  professionalName,
 }: {
   customerName: string;
   customerEmail: string;
@@ -279,7 +279,7 @@ function generateAdminEmailHTML({
   date: string;
   time: string;
   services: string[];
-  hairdresserName: string;
+  professionalName: string;
 }) {
   return `
     <!DOCTYPE html>
@@ -341,7 +341,7 @@ function generateAdminEmailHTML({
                   <strong>Servicios:</strong> ${services.join(", ")}
                 </div>
                 <div style="margin-bottom: 8px;">
-                  <strong>Profesional:</strong> ${hairdresserName}
+                  <strong>Profesional:</strong> ${professionalName}
                 </div>
               </div>
             </div>

@@ -7,7 +7,7 @@ interface AdminNotificationProps {
   date: string;
   time: string;
   services: string[];
-  hairdresserName: string;
+  professionalName: string;
 }
 
 export function AdminNotification({
@@ -17,19 +17,19 @@ export function AdminNotification({
   date,
   time,
   services,
-  hairdresserName,
+  professionalName,
 }: AdminNotificationProps) {
   return (
     <html>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Nueva Reserva - Baraja Studio</title>
+        <title>Nueva Reserva - Armonía Corporal</title>
       </head>
       <body
         style={{
           fontFamily: 'Arial, sans-serif',
-          backgroundColor: '#f9fafb',
+          backgroundColor: '#FDF8F3',
           margin: 0,
           padding: 20,
           color: '#374151',
@@ -40,7 +40,7 @@ export function AdminNotification({
             maxWidth: '500px',
             margin: '0 auto',
             backgroundColor: '#ffffff',
-            border: '1px solid #d1d5db',
+            border: '1px solid #E8D5C4',
             borderRadius: '8px',
             overflow: 'hidden',
           }}
@@ -48,7 +48,7 @@ export function AdminNotification({
           {/* Header */}
           <div
             style={{
-              backgroundColor: '#dc2626',
+              backgroundColor: '#D4A574',
               color: '#ffffff',
               padding: '20px',
               textAlign: 'center',
@@ -61,7 +61,7 @@ export function AdminNotification({
                 fontWeight: 'bold',
               }}
             >
-              🚨 Nueva Reserva Registrada
+              💆‍♀️ Nueva Reserva Registrada
             </h1>
           </div>
 
@@ -71,7 +71,7 @@ export function AdminNotification({
               style={{
                 fontSize: '16px',
                 margin: '0 0 20px 0',
-                color: '#1f2937',
+                color: '#3D2E1F',
               }}
             >
               Se ha registrado una nueva cita con los siguientes detalles:
@@ -80,7 +80,7 @@ export function AdminNotification({
             {/* Client Details */}
             <div
               style={{
-                backgroundColor: '#f3f4f6',
+                backgroundColor: '#FDF8F3',
                 borderRadius: '6px',
                 padding: '15px',
                 marginBottom: '20px',
@@ -107,7 +107,7 @@ export function AdminNotification({
                   <strong>Email:</strong>{' '}
                   <a
                     href={`mailto:${customerEmail}`}
-                    style={{ color: '#2563eb', textDecoration: 'none' }}
+                    style={{ color: '#D4A574', textDecoration: 'none' }}
                   >
                     {customerEmail}
                   </a>
@@ -116,7 +116,7 @@ export function AdminNotification({
                   <strong>Teléfono:</strong>{' '}
                   <a
                     href={`tel:${customerPhone}`}
-                    style={{ color: '#2563eb', textDecoration: 'none' }}
+                    style={{ color: '#D4A574', textDecoration: 'none' }}
                   >
                     {customerPhone}
                   </a>
@@ -127,7 +127,7 @@ export function AdminNotification({
             {/* Appointment Details */}
             <div
               style={{
-                backgroundColor: '#f3f4f6',
+                backgroundColor: '#FDF8F3',
                 borderRadius: '6px',
                 padding: '15px',
               }}
@@ -153,10 +153,10 @@ export function AdminNotification({
                   <strong>Hora:</strong> {time}
                 </div>
                 <div style={{ marginBottom: '8px' }}>
-                  <strong>Servicios:</strong> {services.join(', ')}
+                  <strong>Tratamientos:</strong> {services.join(', ')}
                 </div>
                 <div style={{ marginBottom: '8px' }}>
-                  <strong>Profesional:</strong> {hairdresserName}
+                  <strong>Profesional:</strong> {professionalName}
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ export function AdminNotification({
               borderTop: '1px solid #e5e7eb',
             }}
           >
-            Sistema de Reservas - Baraja Studio
+            Sistema de Reservas - Armonía Corporal
           </div>
         </div>
       </body>
