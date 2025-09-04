@@ -47,9 +47,10 @@ export async function sendAppointmentEmails(data: EmailData) {
 
     // Send customer confirmation email
     const customerEmailResult = await resend.emails.send({
-      from: "Baraja Studio <noreply@barajastudio.uy>",
+      from: "Armonía Corporal by Alejandra Duarte <noreply@alejandraduarte.uy>",
       to: [customerEmail],
-      subject: "Confirmación de tu reserva | Baraja Studio",
+      subject:
+        "Confirmación de tu reserva | Armonía Corporal by Alejandra Duarte",
       html: generateCustomerEmailHTML({
         customerName,
         date,
@@ -64,11 +65,11 @@ export async function sendAppointmentEmails(data: EmailData) {
     // Send admin notification email
     const adminEmail =
       process.env.NEXT_PUBLIC_NOTIFICATION_EMAIL?.replace(/"/g, "") ||
-      "noreply@barajastudio.uy";
+      "noreply@alejandraduarte.uy";
     console.log("Admin email configured as:", adminEmail);
 
     const adminEmailResult = await resend.emails.send({
-      from: "Sistema Baraja Studio <noreply@barajastudio.uy>",
+      from: "Armonía Corporal by Alejandra Duarte <noreply@alejandraduarte.uy>",
       to: [adminEmail],
       subject: "Nueva Reserva Registrada",
       html: generateAdminEmailHTML({
@@ -167,7 +168,7 @@ function generateCustomerEmailHTML({
           <!-- Header -->
           <div style="background-color: #000000; padding: 30px 20px; text-align: center; color: #ffffff;">
             <div style="width: 80px; height: 80px; background-color: #000000; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-              <img src="https://barajastudio.uy/logo.png" 
+              <img src="https://alejandraduarte.uy/logo.png" 
                    alt="Baraja Studio Logo" 
                    style="width: 60px; height: 60px; object-fit: cover;" />
             </div>

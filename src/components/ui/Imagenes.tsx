@@ -37,7 +37,7 @@ export function Imagenes() {
             title={image.title}
             width={360}
             height={560}
-            className="object-cover h-[460px]"
+            className="h-[460px] object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <figcaption className="sr-only">{image.alt}</figcaption>
@@ -56,7 +56,7 @@ export function Imagenes() {
               "Galería de cortes y trabajos realizados en Baraja Studio, barbería profesional en Maldonado, Uruguay",
             image: clientImages.map((img) => ({
               "@type": "ImageObject",
-              url: `https://www.barajastudio.uy${img.src.src}`,
+              url: `https://www.alejandraduarte.uy${img.src.src}`,
               caption: img.alt,
               width: 360,
               height: 560,

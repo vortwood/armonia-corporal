@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     title: "Reservar Turno | Baraja Studio Maldonado",
     description:
       "Reserva tu turno fácil y rápido en la mejor barbería de Maldonado. Sistema online disponible 24/7.",
-    url: "https://www.barajastudio.uy/agenda",
+    url: "https://www.alejandraduarte.uy/agenda",
   },
   alternates: {
-    canonical: "https://www.barajastudio.uy/agenda",
+    canonical: "https://www.alejandraduarte.uy/agenda",
   },
 };
 
