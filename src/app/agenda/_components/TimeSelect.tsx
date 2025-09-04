@@ -101,32 +101,36 @@ export default function TimeSelect({
 
   // Get card styling based on availability and time status
   const getCardClassName = (slot: ExtendedTimeSlot) => {
-    const baseClasses = "cursor-pointer transition-all border-2";
+    const baseClasses = "cursor-pointer transition-all";
 
     if (selectedTime === slot.time) {
-      return `${baseClasses} border-white bg-neutral-100/20`;
+      return `${baseClasses} border-black bg-black`;
     }
 
     if (slot.hasPassed) {
-      return `${baseClasses} cursor-not-allowed border-neutral-600 bg-neutral-700 opacity-50`;
+      return `${baseClasses} cursor-not-allowed border-none bg-neutral-400 opacity-50`;
     }
 
     if (slot.available) {
-      return `${baseClasses} border-neutral-700 bg-neutral-800 hover:border-neutral-600`;
+      return `${baseClasses} border-neutral-300 bg-neutral-400 hover:bg-neutral-400`;
     }
 
     // Already booked
-    return `${baseClasses} cursor-not-allowed border-neutral-700 bg-neutral-900/20 opacity-60`;
+    return `${baseClasses} cursor-not-allowed border-red-500 bg-red-500 opacity-80`;
   };
 
   // Get text styling based on availability and time status
   const getTextClassName = (slot: ExtendedTimeSlot) => {
+    if (selectedTime === slot.time) {
+      return "font-medium text-white";
+    }
+
     if (slot.hasPassed) {
-      return "font-medium text-neutral-500";
+      return "font-medium text-white";
     }
 
     if (!slot.available) {
-      return "font-medium text-neutral-400";
+      return "font-medium text-white";
     }
 
     return "font-medium text-white";

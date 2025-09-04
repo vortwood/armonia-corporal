@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 // Regex patterns for validation (from EnhancedFormNormal)
 const URUGUAYAN_PHONE_REGEX = /^(09\d{7})$/;
@@ -56,7 +57,9 @@ export function PersonalDataForm({
   useEffect(() => {
     const trimmedEmail = personalData.email.trim().toLowerCase();
     // Email is optional, so it's valid if empty or matches regex
-    const isValid = trimmedEmail === "" || (EMAIL_REGEX.test(trimmedEmail) && trimmedEmail.length <= 100);
+    const isValid =
+      trimmedEmail === "" ||
+      (EMAIL_REGEX.test(trimmedEmail) && trimmedEmail.length <= 100);
     setValidEmail(isValid);
   }, [personalData.email]);
 
@@ -79,24 +82,25 @@ export function PersonalDataForm({
   };
 
   const getInputClassName = (fieldValue: string, isValid: boolean) => {
-    const baseClass = "mt-1 bg-neutral-800 border-neutral-700 text-white placeholder-neutral-400 transition-colors";
-    
+    const baseClass =
+      "mt-1 border-neutral-400 border text-black placeholder-neutral-300 transition-colors";
+
     if (fieldValue.trim() === "") {
       return baseClass;
     }
-    
+
     return cn(
       baseClass,
-      isValid 
-        ? "border-white focus:border-neutral-400" 
-        : "border-neutral-400 focus:border-neutral-400"
+      isValid
+        ? "border-neutral-400 focus:border-neutral-400"
+        : "border-neutral-400 focus:border-neutral-400",
     );
   };
 
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="name" className="text-white">
+        <Label htmlFor="name" className="text-black">
           Nombre Completo *
         </Label>
         <Input
@@ -114,7 +118,7 @@ export function PersonalDataForm({
         )}
       </div>
       <div>
-        <Label htmlFor="phone" className="text-white">
+        <Label htmlFor="phone" className="text-black">
           Teléfono *
         </Label>
         <Input
@@ -132,13 +136,13 @@ export function PersonalDataForm({
         )}
       </div>
       <div>
-        <Label htmlFor="email" className="text-white">
+        <Label htmlFor="email" className="text-black">
           Email
         </Label>
         <Input
           id="email"
           type="email"
-          placeholder="Ingrese su email (opcional)"
+          placeholder="Ingrese su email"
           value={personalData.email}
           onChange={(e) => handleChange("email", e.target.value)}
           className={getInputClassName(personalData.email, validEmail)}

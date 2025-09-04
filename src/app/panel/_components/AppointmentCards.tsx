@@ -115,7 +115,7 @@ export function AppointmentCards({
 
           <div>
             <div className="sticky top-0 z-10 mb-4">
-              <h3 className="text-xl font-bold text-neutral-900 sm:text-2xl">
+              <h3 className="mt-4 text-xl font-bold text-neutral-900 sm:text-2xl">
                 {date === todayUI
                   ? "Hoy"
                   : date === tomorrow

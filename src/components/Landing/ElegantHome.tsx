@@ -105,7 +105,7 @@ export default function ElegantHome() {
               </p>
               <Button
                 onClick={handleBookingClick}
-                className="bg-primary text-primary-foreground mt-8 rounded-none px-8 py-4"
+                className="text-primary-foreground mt-8 rounded-none bg-white px-8 py-4"
               >
                 Reservar cita
               </Button>
@@ -122,7 +122,7 @@ export default function ElegantHome() {
       </section>
 
       {/* Testimonials - Simple quotes */}
-      <section className="bg-white px-4 py-20">
+      <section className="bg-white px-4 py-32">
         <div className="mx-auto max-w-4xl">
           <div className="space-y-12 text-center">
             <div>
@@ -156,7 +156,7 @@ export default function ElegantHome() {
           </div>
           <Button
             onClick={handleBookingClick}
-            className="bg-primary text-primary-foreground mt-12 rounded-none px-12 py-6"
+            className="text-primary-foreground mt-12 rounded-none bg-white px-12 py-6"
           >
             RESERVAR AHORA
           </Button>

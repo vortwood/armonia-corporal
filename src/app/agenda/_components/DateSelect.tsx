@@ -119,10 +119,10 @@ export default function DateSelect({
           disabled={!isAvailable}
           className={`h-12 w-full rounded-lg text-sm font-medium transition-all ${
             isSelected
-              ? "bg-white text-black"
+              ? "bg-black text-white"
               : isAvailable
-                ? "cursor-pointer border border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700"
-                : "cursor-not-allowed bg-neutral-900 text-neutral-600"
+                ? "cursor-pointer bg-neutral-400 text-white hover:bg-neutral-700"
+                : "cursor-not-allowed bg-neutral-400 text-neutral-600 opacity-50"
           }`}
         >
           {day}
@@ -158,7 +158,7 @@ export default function DateSelect({
               new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1),
             )
           }
-          className="cursor-pointer rounded-lg bg-neutral-800 p-2 text-white hover:bg-neutral-700"
+          className="cursor-pointer rounded-lg bg-neutral-400 p-2 text-white hover:bg-neutral-700"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -171,7 +171,7 @@ export default function DateSelect({
               new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
             )
           }
-          className="cursor-pointer rounded-lg bg-neutral-800 p-2 text-white hover:bg-neutral-700"
+          className="cursor-pointer rounded-lg bg-neutral-400 p-2 text-white hover:bg-neutral-700"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
@@ -194,8 +194,10 @@ export default function DateSelect({
 
       {selectedDate && (
         <div className="mt-4 rounded-lg border border-neutral-200 bg-neutral-500/20 p-3">
-          <p className="font-medium text-neutral-400">Fecha seleccionada:</p>
-          <p className="text-white capitalize">{formatDate(selectedDate)}</p>
+          <p className="font-medium text-neutral-700">Fecha seleccionada:</p>
+          <p className="text-neutral-500 capitalize">
+            {formatDate(selectedDate)}
+          </p>
         </div>
       )}
     </div>

@@ -669,7 +669,7 @@ export default function AgendaPage() {
                       currentStep === "personal" ? handleSubmit : nextStep
                     }
                     disabled={!canProceedToNextStep() || isSubmitting}
-                    className="ml-auto bg-white text-gray-800 shadow-md hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="ml-auto border bg-white text-gray-800 shadow-md hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">
